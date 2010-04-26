@@ -1,4 +1,10 @@
-# Manage configuration
+"""Module to encapsulate all configuration related code"""
+
+__author__ = "Ditesh Shashikant Gathani"
+__copyright__ = "Copyright (C) 2010 Ditesh Shashikant Gathani"
+__license__ = "GPL"
+__version__ = "0.1"
+__email__ = "ditesh@gathani.org"
 
 import httplib, ConfigParser, os
 config = ConfigParser.ConfigParser()
