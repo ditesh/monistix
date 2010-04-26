@@ -1,0 +1,66 @@
+--- Basic Profile
+
+* CPU
+	- System, user, nice, idle, iowait, irq, softirq
+* Memory
+	- Application
+	- Page tables
+	- Swap cache
+	- vmalloc used
+	- slab cache
+	- cache
+	- buffers
+	- unused
+	- swap
+	- committed
+	- mapped
+	- active
+	- inactive
+* Disk
+	- Filesystem
+	- Inode
+	- IOstat
+* Processes
+	- Fork rate
+	- Number
+	- VMstat
+* Network
+	- Errors
+	- Traffic
+	- Netstat (active, passive, failed, reset, established)
+
+* Entropy
+* Interrupts and context switches
+* Individual interrupts
+* Load average
+* Swap in/out
+* Inode table usage
+* File table usage
+
+--- Mail Profile
+
+Supports: Sendmail, postfix
+
+* Number of processes
+* Mailqueue
+	- active, deferred, maildrop, incoming, corrupt, held
+
+--- Web server
+
+Supports: Apache httpd, lighty
+
+* Number of processes
+* Accesses
+* Volume
+
+
+--- MySQL
+
+* Number of processes
+* Slow query
+* Throughput
+* Queries
+	- select, delete, update, insert, cache_hits, replace, total
+* Threads
+
+
