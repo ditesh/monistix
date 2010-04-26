@@ -16,27 +16,27 @@ class MonitorConf:
 		if not (os.access(filePath, os.R_OK or os.W_OK)):
 			raise IOError
 
-		if not (os.access(filePath + '/client.conf', os.R_OK and os.W_OK)):
+		if not (os.access(os.path.join(filePath, 'client.conf'), os.R_OK and os.W_OK)):
 			raise IOError
 
-		if not (os.access(filePath + '/services.conf', os.R_OK and os.W_OK)):
+		if not (os.access(os.path.join(filePath, 'services.conf'), os.R_OK and os.W_OK)):
 			raise IOError
 
-		if not os.path.exists(filePath + '/client.conf'):
+		if not os.path.exists(os.path.join(filePath, 'client.conf')):
 			try:
-				open(filePath + '/client.conf', 'w').close() 
+				open(os.path.join(filePath, 'client.conf'), 'w').close() 
 			except:
 				raise IOError
 
-		if not os.path.exists(filePath + '/services.conf'):
+		if not os.path.exists(os.path.join(filePath, 'services.conf')):
 			try:
-				open(filePath + '/services.conf', 'w').close() 
+				open(os.path.join(filePath, 'services.conf'), 'w').close() 
 			except:
 				raise IOError
 
 	def read(self):
 		try:
-			config.readfp(open(self.filePath + "/client.conf"))
+			config.readfp(open(os.path.join(self.filePath, "client.conf")))
 
 		except IOError as (errno, strerror):
 			raise
@@ -60,7 +60,7 @@ class MonitorConf:
 			data = resp.read
 
 			try:
-				configFile = open(self.filePath + "/services.conf", "w")
+				configFile = open(os.path.join(self.filePath, "services.conf"), "w")
 				configFile.write(data)
 
 			except ConfigParser.NoSectionError:
@@ -72,21 +72,22 @@ class MonitorConf:
 		self.key = key
 		self.server = server
 
-		conn = httplib.HTTPConnection(server)
-		conn.request("GET", "/?key=" + self.key);
-		resp = conn.getresponse()
+		try:
+			conn = httplib.HTTPConnection(server)
+			conn.request("GET", "/?key=" + self.key);
+			resp = conn.getresponse()
+
+		except:
+			raise httplib.HTTPException
 
 		if resp.status == 200:
 
 			try:
-				config.read(open(self.filePath + "/client.conf"))
-				config.set("client", "key", self.key)
-				config.set("client", "server", self.server)
-				configFile.write()
+				open(os.path.join(self.filePath, "client.conf"), "w").write(resp.read())
 				return
 
 			except:
-				raise Exception
+				raise
 
 		else:
 			raise IOError

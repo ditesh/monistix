@@ -2,7 +2,7 @@
 # Author: Ditesh Shashikant Gathani
 # License: GPL v3
 
-import sys, traceback, configuration
+import sys, traceback, configuration, httplib
 from string import *
 from optparse import OptionParser
 
@@ -29,23 +29,20 @@ except IOError:
 if len(options.key) > 0:
 
 	try: 
-		configObj.reconfigure(options.key)
+		configObj.reconfigure(options.key, options.server)
 		print "Success: Configured successfully. Run this script again to get list of configured services."
 		sys.exit(0)
 
-	except IOError:
+	except httplib.HTTPException:
 		print >> sys.stderr, "Error: Unable to connect to server, please ensure network connectivity"
 		sys.exit(1)
 
-	except:
-		print >> sys.stderr, "Error: Unable to set configuration options, please ensure key is correct."
+	except IOError:
+		print >> sys.stderr, "Error: Unable to save configuration data. Please check file permissions"
 		sys.exit(1)
 
-	try:
-		configObj.read()
-
-	except IOError:
-		print >> sys.stderr, "Error: Unable to open configuration file or invalid configuration file. Try reconfiguring."
+	except:
+		print >> sys.stderr, "Error: Unable to set configuration options, please ensure key is correct"
 		sys.exit(1)
 
 else: 
