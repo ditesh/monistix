@@ -41,6 +41,8 @@ if len(options.key) > 0:
 		print >> sys.stderr, "Error: Unable to save configuration data. Please check file permissions"
 		sys.exit(1)
 
+	except SystemExit: pass
+
 	except:
 		print >> sys.stderr, "Error: Unable to set configuration options, please ensure key is correct"
 		sys.exit(1)
@@ -53,7 +55,10 @@ else:
 		print "Success: got list of configured services, all done!"
 		sys.exit(0)
 
+	except SystemExit: pass
+
 	except:
-		print >> sys.stderr, "Error: Invalid configuration file or unable to get list of services. Try reconfiguring."
+		traceback.print_exc(file=sys.stdout)
+		print >> sys.stderr, "Error: Invalid configuration file or unable to get list of services. Try reconfiguring"
 		sys.exit(1)
 

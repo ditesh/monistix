@@ -34,7 +34,9 @@ class MonitorConf:
 			except:
 				raise IOError
 
+	# Read configuration file
 	def read(self):
+
 		try:
 			config.readfp(open(os.path.join(self.filePath, "client.conf")))
 
@@ -50,21 +52,27 @@ class MonitorConf:
 	# Get list of services
 	def getServices(self):
 
-		conn = httplib.HTTPConnection(self.server)
-		conn.request("GET", "/?key=" + self.key)
-		resp = conn.getresponse()
+		try:
+			conn = httplib.HTTPConnection(self.server)
+			conn.request("GET", "/services.php?key=" + self.key)
+			resp = conn.getresponse()
+
+		except:
+			raise httplib.HTTPException
 
 		# Write to /etc/monitor/services.conf
 		if resp.status == 200:
 
-			data = resp.read
-
 			try:
-				configFile = open(os.path.join(self.filePath, "services.conf"), "w")
-				configFile.write(data)
+				open(os.path.join(self.filePath, "services.conf"), "w").write(resp.read())
+				return
 
-			except ConfigParser.NoSectionError:
-				raise ConfigParser.NoSectionError
+			except:
+				raise IOError
+
+		else:
+			raise Exception
+
 
 	# Validate the account
 	def reconfigure(self, key, server):
@@ -87,7 +95,7 @@ class MonitorConf:
 				return
 
 			except:
-				raise
+				raise IOError
 
 		else:
-			raise IOError
+			raise Exception
