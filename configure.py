@@ -11,7 +11,10 @@ import sys, traceback, configuration, httplib
 from string import *
 from optparse import OptionParser
 
-def main():
+def main(argv=None):
+
+	if argv is None:
+		argv = sys.argv
 
 	# Configuration options
 	parser = OptionParser()
@@ -31,28 +34,28 @@ def main():
 
 	except IOError:
 		print >> sys.stderr, "Configuration directory (" + configPath + ") does not exist or insufficient permissions to read/write"
-		sys.exit(1)
+		return 1
 
 	if len(options.key) > 0:
 
 		try: 
 			configObj.reconfigure(options.key, options.server)
 			print "Success: Configured successfully. Run this script again to get list of configured services."
-			sys.exit(0)
+			return 0
 
 		except httplib.HTTPException:
 			print >> sys.stderr, "Error: Unable to connect to server, please ensure network connectivity"
-			sys.exit(1)
+			return 1
 
 		except IOError:
 			print >> sys.stderr, "Error: Unable to save configuration data. Please check file permissions"
-			sys.exit(1)
+			return 1
 
 		except SystemExit: pass
 
 		except:
 			print >> sys.stderr, "Error: Unable to set configuration options, please ensure key is correct"
-			sys.exit(1)
+			return 1
 
 	else: 
 
@@ -60,17 +63,17 @@ def main():
 			configObj.read()
 			configObj.getServices()
 			print "Success: got list of configured services, all done!"
-			sys.exit(0)
+			return 0
 
 		except httplib.HTTPException:
 			print >> sys.stderr, "Error: Unable to connect to server, please ensure network connectivity"
-			sys.exit(1)
+			return 1
 
 		except SystemExit: pass
 
 		except:
 			print >> sys.stderr, "Error: Invalid configuration file or unable to get list of services. Try reconfiguring"
-			sys.exit(1)
+			return 1
 
 if __name__ == "__main__":
-	main()
+	sys.exit(main())
