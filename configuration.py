@@ -41,12 +41,12 @@ class MonitorConf:
 				raise IOError
 
 	# Read configuration file
-	def read(self):
+	def readClientConfig(self):
 
 		try:
 			config.readfp(open(os.path.join(self.filePath, "client.conf")))
 
-		except IOError as (errno, strerror):
+		except IOError:
 			raise
 
 		key = config.get("client", "key")
@@ -54,6 +54,18 @@ class MonitorConf:
 
 		self.key = key
 		self.server = server
+
+	# Read configuration file
+	def readServicesConfig(self):
+
+		try:
+			config.readfp(open(os.path.join(self.filePath, "services.conf")))
+
+		except IOError:
+			raise
+
+		self.services = config
+
 
 	# Get list of services
 	def getServices(self):

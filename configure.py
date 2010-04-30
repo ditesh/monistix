@@ -60,7 +60,7 @@ def main(argv=None):
 	else: 
 
 		try: 
-			configObj.read()
+			configObj.readClientConfig()
 			configObj.getServices()
 			print "Success: got list of configured services, all done!"
 			return 0
