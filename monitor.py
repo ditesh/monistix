@@ -6,6 +6,7 @@ __license__ = "GPL"
 __version__ = "0.1"
 __email__ = "ditesh@gathani.org"
 
+import os
 import sys
 import json
 import time
@@ -27,7 +28,7 @@ class Dispatcher:
 		except:
 			raise
 
-		self.ms = MonitoringStore(self.monitorConf.key, self.monitorConf.server, self.monitorConf.cache)
+		self.ms = Store(self.monitorConf.key, self.monitorConf.server, self.monitorConf.cache)
 
 		for service in self.monitorConf.services.sections():
 
@@ -58,19 +59,25 @@ class Dispatcher:
 class Store:
 
 	def __init__(self, key, server, cache):
+
 		self.data = []
 		self.key = key
 		self.server = server
 		self.cache = cache
 
 	def store(self, key, value):
+
 		self.data.append({key: value})
 
+
 	def sync(self):
+
 		try:
 			self.sendUpstream()
 
 		except:
+
+			print >> sys.stderr, "Unable send monitoring data upstream (" + self.server + "), attempting to save to disk"
 
 			try:
 				self.save()
@@ -113,18 +120,13 @@ class Store:
 	def save(self):
 
 		data = json.dumps(self.data)
-		cache = self.cache
-		filePath = os.path.join(cache, time()+".json")
+		filePath = os.path.join(self.cache, str(time.time()) + ".json")
 
-		if os.access(filePath, os.R_OK or os.W_OK):
+		try:
+			fp = open(filePath, "w")
+			fp.write(data)
+			fp.close()
 
-			try:
-				fp = open(filePath, "w")
-				fp.write(data)
-				fp.close()
-
-			except:
-				raise
-
-		else:
-			print sys.stderr, "Unable save monitoring data, cannot write to cache path (check permission and path)"
+		except:
+			print >> sys.stderr, "Unable save monitoring data, cannot write to cache path (check permission and path)"
+			raise

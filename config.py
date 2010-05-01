@@ -6,7 +6,9 @@ __license__ = "GPL"
 __version__ = "0.1"
 __email__ = "ditesh@gathani.org"
 
-import httplib, ConfigParser, os
+import httplib
+import ConfigParser
+import os
 config = ConfigParser.ConfigParser()
 
 class MonitorConf:
@@ -49,11 +51,23 @@ class MonitorConf:
 		except IOError:
 			raise
 
-		key = config.get("client", "key")
-		server = config.get("client", "server")
+		try:
+			self.key = config.get("client", "key")
 
-		self.key = key
-		self.server = server
+		except ConfigParser.NoOptionError:
+			self.key = ""
+			
+		try:
+			self.server = config.get("client", "server")
+
+		except ConfigParser.NoOptionError:
+			self.server = ""
+		
+		try:
+			self.cache = config.get("client", "cache")
+
+		except ConfigParser.NoOptionError:
+			self.cache = ""
 
 	# Read configuration file
 	def readServicesConfig(self):
