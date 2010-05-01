@@ -10,24 +10,24 @@ import sys
 import json
 import time
 import httplib
-import configuration
+import config
 
-"""Monitoring module loader and """
-class MonitoringDispatcher:
+"""Module loader and dispatcher"""
+class Dispatcher:
 
 	def __init__(self):
 
 		self.services = {}
 
 		try:
-			self.monitorConf = configuration.MonitorConf()
+			self.monitorConf = config.MonitorConf()
 			self.monitorConf.readServicesConfig()
 			self.monitorConf.readClientConfig()
 
 		except:
 			raise
 
-		self.ms = MonitoringStore(self.monitorConf.key, self.monitorConf.server)
+		self.ms = MonitoringStore(self.monitorConf.key, self.monitorConf.server, self.monitorConf.cache)
 
 		for service in self.monitorConf.services.sections():
 
@@ -37,31 +37,51 @@ class MonitoringDispatcher:
 				self.services[service] = obj()
 
 			except:
-				print >> sys.stderr, "Unable to correctly import " + service + ".py"
+				print >> sys.stderr, "Unable to correctly import module " + service + ".py"
 
-	def getData(self):
+	def dispatch(self):
 
 		for service in self.services:
 			data = self.services[service].getData()
 			self.ms.store(service, data)
 
+	def sync(self):
+
+		try:
+			self.ms.sync()
+
+		except:
+			raise
+
 
 """Per instance store"""
-class MonitoringStore:
+class Store:
 
-	def __init__(self, key, server):
+	def __init__(self, key, server, cache):
 		self.data = []
 		self.key = key
 		self.server = server
+		self.cache = cache
 
-	def store(self, name, value):
-		obj.store(value)
-		self.data.push(obj)
+	def store(self, key, value):
+		self.data.append({key: value})
+
+	def sync(self):
+		try:
+			self.sendUpstream()
+
+		except:
+
+			try:
+				self.save()
+
+			except:
+				raise
 
 	def sendUpstream(self):
 
-		key = config.get("client", "key")
-		server = config.get("client", "server")
+		key = self.key
+		server = self.server
 		data = json.dumps(self.data)
 
 		try:
@@ -90,9 +110,10 @@ class MonitoringStore:
 
 
 
-	def save(self, data):
+	def save(self):
 
-		cache = config.get("client", "cache")
+		data = json.dumps(self.data)
+		cache = self.cache
 		filePath = os.path.join(cache, time()+".json")
 
 		if os.access(filePath, os.R_OK or os.W_OK):

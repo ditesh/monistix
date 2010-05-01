@@ -7,7 +7,7 @@ __license__ = "GPL"
 __version__ = "0.1"
 __email__ = "ditesh@gathani.org"
 
-import sys, traceback, configuration, httplib
+import sys, traceback, config, httplib
 from string import *
 from optparse import OptionParser
 
@@ -30,7 +30,7 @@ def main(argv=None):
 	configPath = options.config;
 
 	try:
-		configObj = configuration.MonitorConf(configPath)
+		configObj = config.MonitorConf(configPath)
 
 	except IOError:
 		print >> sys.stderr, "Configuration directory (" + configPath + ") does not exist or insufficient permissions to read/write"

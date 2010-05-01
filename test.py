@@ -6,7 +6,7 @@ __license__ = "GPL"
 __version__ = "0.1"
 __email__ = "ditesh@gathani.org"
 
-import data, sys, traceback
+import monitor, sys, traceback
 
 def main(argv=None):
 
@@ -14,8 +14,9 @@ def main(argv=None):
 		argv = sys.argv
 
 	try:
-		md = data.MonitoringDispatcher()
-		md.getData()
+		md = monitor.Dispatcher()
+		md.dispatch()
+		md.sync()
 		return 0
 
 	except:
