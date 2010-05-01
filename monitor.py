@@ -67,7 +67,12 @@ class Store:
 
 	def store(self, key, value):
 
-		self.data.append({key: value})
+		self.data.append({
+
+				"timestamp": time.time(),
+				"data": {key: value}
+
+			})
 
 
 	def sync(self):
