@@ -10,8 +10,10 @@ import os
 import sys
 import json
 import time
-import httplib
 import config
+import httplib
+import profiles
+import traceback
 
 """Module loader and dispatcher"""
 class Dispatcher:
@@ -21,24 +23,30 @@ class Dispatcher:
 		self.services = {}
 
 		try:
-			self.monitorConf = config.MonitorConf()
-			self.monitorConf.readServicesConfig()
-			self.monitorConf.readClientConfig()
+			self.configuration = config.MonitorConf()
+			self.configuration.readServicesConfig()
+			self.configuration.readClientConfig()
 
 		except:
 			raise
 
-		self.ms = Store(self.monitorConf.key, self.monitorConf.server, self.monitorConf.cache)
+		self.ms = Store(self.configuration.key, self.configuration.server, self.configuration.cache)
 
-		for service in self.monitorConf.services.sections():
+		for service in self.configuration.services.sections():
 
 			try:
-				module = __import__(service)
+				module = getattr(profiles, service)
 				obj = getattr(module, service.capitalize() + "Profile")
 				self.services[service] = obj()
 
-			except:
-				print >> sys.stderr, "Unable to correctly import module " + service + ".py"
+			except (ImportError, AttributeError):
+				print >> sys.stderr, "Unable to correctly import module profiles/" + service + ".py"
+
+		if len(self.services) == 0:
+			print >> sys.stderr, "No modules imported, will not continue"
+			raise
+			
+
 
 	def dispatch(self):
 

@@ -9,7 +9,10 @@ __email__ = "ditesh@gathani.org"
 import httplib
 import ConfigParser
 import os
-config = ConfigParser.ConfigParser()
+
+# Why two config objects? Have to fix
+clientConfig = ConfigParser.ConfigParser()
+servicesConfig = ConfigParser.ConfigParser()
 
 class MonitorConf:
 
@@ -46,25 +49,25 @@ class MonitorConf:
 	def readClientConfig(self):
 
 		try:
-			config.readfp(open(os.path.join(self.filePath, "client.conf")))
+			clientConfig.readfp(open(os.path.join(self.filePath, "client.conf")))
 
 		except IOError:
 			raise
 
 		try:
-			self.key = config.get("client", "key")
+			self.key = clientConfig.get("client", "key")
 
 		except ConfigParser.NoOptionError:
 			self.key = ""
 			
 		try:
-			self.server = config.get("client", "server")
+			self.server = clientConfig.get("client", "server")
 
 		except ConfigParser.NoOptionError:
 			self.server = ""
 		
 		try:
-			self.cache = config.get("client", "cache")
+			self.cache = clientConfig.get("client", "cache")
 
 		except ConfigParser.NoOptionError:
 			self.cache = ""
@@ -73,12 +76,12 @@ class MonitorConf:
 	def readServicesConfig(self):
 
 		try:
-			config.readfp(open(os.path.join(self.filePath, "services.conf")))
+			servicesConfig.readfp(open(os.path.join(self.filePath, "services.conf")))
 
 		except IOError:
 			raise
 
-		self.services = config
+		self.services = servicesConfig
 
 
 	# Get list of services
