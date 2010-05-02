@@ -1,23 +1,36 @@
 __author__ = "Ditesh Shashikant Gathani"
 __copyright__ = "Copyright (C) 2010 Ditesh Shashikant Gathani"
-
-__revision__ = "$Id$"
+__license__ = "GPL"
 __version__ = "0.1"
+__email__ = "ditesh@gathani.org"
 
-# Standard Python modules.
-import os               # Miscellaneous OS interfaces.
-import sys              # System-specific parameters and functions.
+import os
+import sys
+import time
+import signal
+import monitor
+import traceback
+
+# Basic sanity checks
+try:
+	md = monitor.Dispatcher()
+
+except IOError:
+	print >> sys.stderr, "Configuration path does not exist or insufficient permissions to read/write"
+	sys.exit(1)
+
+except:
+	traceback.print_exc(file=sys.stdout)
+	sys.exit(1)
 
 UMASK = 0
 WORKDIR = "/"
 MAXFD = 1024
 
 if (hasattr(os, "devnull")):
-
 	REDIRECT_TO = os.devnull
 
 else:
-
 	REDIRECT_TO = "/dev/null"
 
 def createDaemon():
@@ -73,13 +86,22 @@ def createDaemon():
 
 	return(0)
 
+
+def handler(signum, frame):
+	print "SIGHUP caught, shutting down slashproc-daemon ..."
+	sys.exit(0)
+
+
 if __name__ == "__main__":
 
 	retCode = createDaemon()
+	signal.signal(signal.SIGHUP, handler)
+	i = 0
 
-	while true:
+	while True:
 
-		
-		sleep
+		md.dispatch()
+		md.sync()
+		time.sleep(60)
 
 	sys.exit(retCode)

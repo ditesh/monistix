@@ -125,6 +125,8 @@ class Store:
 
 				raise httplib.HTTPException
 
+			self.data = []
+
 		except:
 			raise httplib.HTTPException
 
@@ -141,5 +143,8 @@ class Store:
 			fp.close()
 
 		except:
-			print >> sys.stderr, "Unable save monitoring data, cannot write to cache path (check permission and path)"
+			print >> sys.stderr, "Unable save monitoring data, cannot write to cache path (" + filePath + "), check permission and path"
 			raise
+
+		# empty out data once file has been successfully written
+		self.data = []

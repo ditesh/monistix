@@ -6,9 +6,9 @@ __license__ = "GPL"
 __version__ = "0.1"
 __email__ = "ditesh@gathani.org"
 
+import os
 import httplib
 import ConfigParser
-import os
 
 # Why two config objects? Have to fix
 clientConfig = ConfigParser.ConfigParser()
