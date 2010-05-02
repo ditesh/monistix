@@ -1,4 +1,4 @@
-"""System Profile gets system level information:
+"""System profile provides system level data:
 
 * Hardware installed
 	- CPU
@@ -17,6 +17,8 @@ __email__ = "ditesh@gathani.org"
 
 import os
 import sys
+import socket
+import subprocess
 
 try:
 	import psutil
@@ -33,37 +35,37 @@ class SystemProfile:
 		uname = os.uname()
 		pythonVersion = sys.version 
 		hostname = socket.gethostname()
-		cpuData = subprocess.call("/usr/bin/lscpu")
-		pciData = subprocess.call("/usr/bin/lspci")
-		diskData = open("/proc/partitions", "r").read().close()
-		
+		cpuData = subprocess.Popen(["/usr/bin/lscpu"], stdout=subprocess.PIPE).communicate()[0]
+		pciData = subprocess.Popen(["/sbin/lspci"], stdout=subprocess.PIPE).communicate()[0]
 
-		return { "uname": uname, "python_version": pythonVersion, "hostname": hostname, "cpu_data": cpuData, "pci_data": pciData, "disk_data": diskData, "os_name": self.osData, "os_version": self.osVersion}
+		fp = open("/proc/partitions", "r")
+		diskData = fp.read()
+		fp.close()
+
+		self.getOS()
+
+		return { "uname": uname, "python_version": pythonVersion, "hostname": hostname, "cpu_data": cpuData, "pci_data": pciData, "disk_data": diskData, "os_name": self.osName, "os_version": self.osVersion}
 
 	def getOS(self):
 
-		filenames = [
-				"/etc/redhat-release",
+		self.osName = ""
+		self.osVersion = 0
+
+		filenames = [	"/etc/redhat-release",
 				"/etc/SuSE-release"]
 
 		for filename in filenames:
 
-			if os.path.is_file(filename)
+			if os.path.isfile(filename):
 
-				data = open(filename, "r").read().write()
+				fp = open(filename, "r")
+				data = fp.read()
+				fp.close()
 
-				if (data.find("Fedora") > 0):
-					osName = "Fedora"
-					osVersion = data[15:16]
+				if (data.find("Fedora") >= 0):
+					self.osName = "Fedora"
+					self.osVersion = data[15:16]
 
-				else if (data.find("Red Hat Enterprise Linux") > 0):
-					osName = "Red Hat Enterprise Linux"
-					osVersion = data[42:44]
-
-
-		if (str(os) == 0):
-			osName = data
-			osVersion = 0
-
-		self.osName = osName
-		self.osVersion = osVersion
+				elif (data.find("Red Hat Enterprise Linux") >= 0):
+					self.osName = "Red Hat Enterprise Linux"
+					self.osVersion = data[42:44]
