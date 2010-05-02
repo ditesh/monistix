@@ -1,0 +1,11 @@
+TODO
+
+1. Write doc on JSON format
+
+2. Fix daemon
+
+3. Put profiles into profiles/
+
+4. Test sending upstream
+
+5. Add capability to send older data upstream

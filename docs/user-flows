@@ -1,0 +1,37 @@
+
+--- registration
+
+1. user registers on website:
+
+a. enter emails address
+b. server name
+
+2. user verifies account
+
+3. key is provided for user, along with a link to download software
+
+4. software should have key already installed
+
+--- configuration
+
+#should not happen, but need it just in case
+
+1. user runs configure.py
+2. if key is valid, it will update with list of services
+3. if key is invalid, it will prompt for key and install new key
+
+
+--- getting list of services
+
+1. runs every hour
+2. can also be run through running configure.py
+
+
+--- sending data
+
+1. send.py should be daeon
+2. executes plugins every 5 minutes
+3. saves locally
+4. sends to server, deletes locally
+
+
