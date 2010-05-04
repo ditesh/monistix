@@ -32,15 +32,46 @@ class SystemProfile:
 
 	def getData(self):
 
+		cpuData = {}
+		pciData = {}
+		diskData = []
 		uname = os.uname()
 		pythonVersion = sys.version 
 		hostname = socket.gethostname()
-		cpuData = subprocess.Popen(["/usr/bin/lscpu"], stdout=subprocess.PIPE).communicate()[0]
-		pciData = subprocess.Popen(["/sbin/lspci"], stdout=subprocess.PIPE).communicate()[0]
+		lines = subprocess.Popen(["/usr/bin/lscpu"], stdout=subprocess.PIPE).communicate()[0].split("\n")
+
+		for line in lines:
+
+			columns = line.split(":")
+
+			try:
+				cpuData[columns[0].strip()] = columns[1].strip()
+
+			except IndexError: pass
+
+		lines = subprocess.Popen(["/sbin/lspci"], stdout=subprocess.PIPE).communicate()[0].split("\n")
+
+		for line in lines:
+
+			try:
+				key = line[0:7]
+				value = line[9]
+				pciData[key] = value
+
+			except IndexError: pass
 
 		fp = open("/proc/partitions", "r")
-		diskData = fp.read()
+		lines = fp.read().split("\n")
 		fp.close()
+
+		for line in lines:
+
+			columns = line.split()
+
+			if len(columns) == 0: continue
+
+			diskData.append(columns)
+
 
 		self.getOS()
 
