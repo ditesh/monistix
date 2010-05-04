@@ -37,7 +37,14 @@ class Dispatcher:
 			try:
 				module = getattr(profiles, service)
 				obj = getattr(module, service.capitalize() + "Profile")
-				self.services[service] = obj()
+
+					try:
+						configValues = configuration.services.items(service)
+
+					except ConfigParser.NoSectionError:
+						configValues = []
+
+				self.services[service] = obj(configValues)
 
 			except (ImportError, AttributeError):
 				print >> sys.stderr, "Unable to correctly import module profiles/" + service + ".py"
