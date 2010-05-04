@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+"""Daemon which collects and subsequently sends or saves monitoring data"""
+
 __author__ = "Ditesh Shashikant Gathani"
 __copyright__ = "Copyright (C) 2010 Ditesh Shashikant Gathani"
 __license__ = "GPL"
