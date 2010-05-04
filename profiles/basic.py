@@ -1,5 +1,10 @@
-"""Manage monitoring data for basic profile"""
+"""Basic profile provides OS specific data:
 
+* CPU use
+* Memory use
+* Filesystem
+
+"""
 __author__ = "Ditesh Shashikant Gathani"
 __copyright__ = "Copyright (C) 2010 Ditesh Shashikant Gathani"
 __license__ = "GPL"
@@ -19,6 +24,7 @@ class BasicProfile:
 	def getData(self):
 
 		cpu = {}
+		newcpu = {}
 		mem = {}
 		cpuData = psutil.cpu_times()
 
@@ -30,11 +36,18 @@ class BasicProfile:
 		cpu["irq"] = cpuData.irq
 		cpu["softirq"] = cpuData.softirq
 
+		for item in cpu:
+			cpu[item] = round(cpu[item], 2)
+			newcpu[item] = round(cpu[item], 2)
+
 		mem["total"] = psutil.TOTAL_PHYMEM
 		mem["available"] = psutil.avail_phymem()
 		mem["used"] = psutil.used_phymem()
 		mem["total_virtmem"] = psutil.total_virtmem()
 		mem["avail_virtmem"] = psutil.avail_virtmem()
 		mem["used_virtmem"] = psutil.used_virtmem()
+
+		for item in mem:
+			mem[item] = round(mem[item], 2)
 
 		return { "cpu": cpu, "memory": mem }
