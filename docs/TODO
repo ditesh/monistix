@@ -2,6 +2,15 @@ TODO
 
 1. Write doc on JSON format
 
+2. Add check for diskspace <= 5% (optionally to not write to disk if no space)
+
+3. Add the following plugins:
+
+a) Sendmail
+b) Apache
+c) Dovecot
+d) Squid
+
 4. Test sending upstream
 
 5. Add capability to send older data upstream
