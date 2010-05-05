@@ -6,7 +6,9 @@ __license__ = "GPL"
 __version__ = "0.1"
 __email__ = "ditesh@gathani.org"
 
-import monitor, sys, traceback
+import sys
+import monitor
+import traceback
 
 def main(argv=None):
 
