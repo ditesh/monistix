@@ -1,11 +1,416 @@
 1. JSON
 
+The client sends (or saves, if the network is down) all instrumentation data in the JSON format (RFC 4627).
 
-2. Values and rounding
+Each time the client collects instrumentation information, it is stored in a single JSON object. The structure of the object is given in the following example:
 
+{
+	{
+
+		"timestamp": 1273138100.123456
+		"data": {
+
+				"mysql": {
+						"some-instrumentation-element-1": "some-instrumentation-value-1",
+						"some-instrumentation-element-2": "some-instrumentation-value-2",
+					},
+
+				"apache": {
+						"some-instrumentation-element-1": "some-instrumentation-value-1",
+						"some-instrumentation-element-2": "some-instrumentation-value-2",
+
+					}
+			}
+	},
+	{
+
+		"timestamp": 1273138160.123456
+		"data": {
+
+				"mysql": {
+						"some-instrumentation-element-1": "some-instrumentation-value-1",
+						"some-instrumentation-element-2": "some-instrumentation-value-2",
+					},
+
+				"apache": {
+						"some-instrumentation-element-1": "some-instrumentation-value-1",
+						"some-instrumentation-element-2": "some-instrumentation-value-2",
+					}
+			}
+	},
+}
+
+As can be clearly seen in the example, two services are being monitored - Apache HTTP and MySQL. Both services are returning some instrumentation elements which have some value. There are two time instances in the example given above.
+
+
+2. Profiles
+
+Instrumentation data about services are collected within profiles. Here is a list of profiles and associated instrumentation elements:
+
+a) System Profile
+
+The system profile captures system information. Instrumentation elements are:
+
+* uname
+* python_version
+* hostname
+* cpu_data
+	- Architecture
+	- CPU(s)
+	- Thread(s) per socket
+	- Core(s) per socket
+	- CPU socket(s)
+	- Vendor ID
+	- CPU family
+	- Model
+	- Stepping
+	- CPU Mhz
+	- Virtualization
+	- L1d cache
+	- L1i cache
+	- L2 cache
+* pci_data - list of PCI devices on system
+* disk_data - list of disk partitions on system
+* os_name - installed operating system
+* os_version - installed operating system version
+
+b) Basic Profile
+
+Basic profile provides OS specific data on CPU, memory and filesystem use. Instrumentation elements are:
+
+* cpu
+	- user
+	- system
+	- idle
+	- nice
+	- iowait
+	- irq
+	- softirq
+* memory
+	- total
+	- available
+	- used
+	- total_virtmem
+	- avail_virtmem
+	- used_virtmem
+
+c) MySQL Profile
+
+MySQL profile provides MySQL specific instrumentation data. Instrumentation elements are:
+
+* aborted_clients
+* aborted_connects
+* binlog_cache_disk_use
+* binlog_cache_use
+* bytes_received
+* bytes_sent
+* com_admin_commands
+* com_assign_to_keycache
+* com_alter_db
+* com_alter_db_upgrade
+* com_alter_event
+* com_alter_function
+* com_alter_procedure
+* com_alter_server
+* com_alter_table
+* com_alter_tablespace
+* com_analyze
+* com_backup_table
+* com_begin
+* com_binlog
+* com_call_procedure
+* com_change_db
+* com_change_master
+* com_check
+* com_checksum
+* com_commit
+* com_create_db
+* com_create_event
+* com_create_function
+* com_create_index
+* com_create_procedure
+* com_create_server
+* com_create_table
+* com_create_trigger
+* com_create_udf
+* com_create_user
+* com_create_view
+* com_dealloc_sql
+* com_delete
+* com_delete_multi
+* com_do
+* com_drop_db
+* com_drop_event
+* com_drop_function
+* com_drop_index
+* com_drop_procedure
+* com_drop_server
+* com_drop_table
+* com_drop_trigger
+* com_drop_user
+* com_drop_view
+* com_empty_query
+* com_execute_sql
+* com_flush
+* com_grant
+* com_ha_close
+* com_ha_open
+* com_ha_read
+* com_help
+* com_insert
+* com_insert_select
+* com_install_plugin
+* com_kill
+* com_load
+* com_load_master_data
+* com_load_master_table
+* com_lock_tables
+* com_optimize
+* com_preload_keys
+* com_prepare_sql
+* com_purge
+* com_purge_before_date
+* com_release_savepoint
+* com_rename_table
+* com_rename_user
+* com_repair
+* com_replace
+* com_replace_select
+* com_reset
+* com_restore_table
+* com_revoke
+* com_revoke_all
+* com_rollback
+* com_rollback_to_savepoint
+* com_savepoint
+* com_select
+* com_set_option
+* com_show_authors
+* com_show_binlog_events
+* com_show_binlogs
+* com_show_charsets
+* com_show_collations
+* com_show_column_types
+* com_show_contributors
+* com_show_create_db
+* com_show_create_event
+* com_show_create_func
+* com_show_create_proc
+* com_show_create_table
+* com_show_create_trigger
+* com_show_databases
+* com_show_engine_logs
+* com_show_engine_mutex
+* com_show_engine_status
+* com_show_events
+* com_show_errors
+* com_show_fields
+* com_show_function_status
+* com_show_grants
+* com_show_keys
+* com_show_master_status
+* com_show_new_master
+* com_show_open_tables
+* com_show_plugins
+* com_show_privileges
+* com_show_procedure_status
+* com_show_processlist
+* com_show_profile
+* com_show_profiles
+* com_show_slave_hosts
+* com_show_slave_status
+* com_show_status
+* com_show_storage_engines
+* com_show_table_status
+* com_show_tables
+* com_show_triggers
+* com_show_variables
+* com_show_warnings
+* com_slave_start
+* com_slave_stop
+* com_stmt_close
+* com_stmt_execute
+* com_stmt_fetch
+* com_stmt_prepare
+* com_stmt_reprepare
+* com_stmt_reset
+* com_stmt_send_long_data
+* com_truncate
+* com_uninstall_plugin
+* com_unlock_tables
+* com_update
+* com_update_multi
+* com_xa_commit
+* com_xa_end
+* com_xa_prepare
+* com_xa_recover
+* com_xa_rollback
+* com_xa_start
+* compression
+* connections
+* created_tmp_disk_tables
+* created_tmp_files
+* created_tmp_tables
+* delayed_errors
+* delayed_insert_threads
+* delayed_writes
+* flush_commands
+* handler_commit
+* handler_delete
+* handler_discover
+* handler_prepare
+* handler_read_first
+* handler_read_key
+* handler_read_next
+* handler_read_prev
+* handler_read_rnd
+* handler_read_rnd_next
+* handler_rollback
+* handler_savepoint
+* handler_savepoint_rollback
+* handler_update
+* handler_write
+* innodb_buffer_pool_pages_data
+* innodb_buffer_pool_pages_dirty
+* innodb_buffer_pool_pages_flushed
+* innodb_buffer_pool_pages_free
+* innodb_buffer_pool_pages_misc
+* innodb_buffer_pool_pages_total
+* innodb_buffer_pool_read_ahead_rnd
+* innodb_buffer_pool_read_ahead_seq
+* innodb_buffer_pool_read_requests
+* innodb_buffer_pool_reads
+* innodb_buffer_pool_wait_free
+* innodb_buffer_pool_write_requests
+* innodb_data_fsyncs
+* innodb_data_pending_fsyncs
+* innodb_data_pending_reads
+* innodb_data_pending_writes
+* innodb_data_read
+* innodb_data_reads
+* innodb_data_writes
+* innodb_data_written
+* innodb_dblwr_pages_written
+* innodb_dblwr_writes
+* innodb_log_waits
+* innodb_log_write_requests
+* innodb_log_writes
+* innodb_os_log_fsyncs
+* innodb_os_log_pending_fsyncs
+* innodb_os_log_pending_writes
+* innodb_os_log_written
+* innodb_page_size
+* innodb_pages_created
+* innodb_pages_read
+* innodb_pages_written
+* innodb_row_lock_current_waits
+* innodb_row_lock_time
+* innodb_row_lock_time_avg
+* innodb_row_lock_time_max
+* innodb_row_lock_waits
+* innodb_rows_deleted
+* innodb_rows_inserted
+* innodb_rows_read
+* innodb_rows_updated
+* key_blocks_not_flushed
+* key_blocks_unused
+* key_blocks_used
+* key_read_requests
+* key_reads
+* key_write_requests
+* key_writes
+* last_query_cost
+* max_used_connections
+* not_flushed_delayed_rows
+* open_files
+* open_streams
+* open_table_definitions
+* open_tables
+* opened_files
+* opened_table_definitions
+* opened_tables
+* prepared_stmt_count
+* qcache_free_blocks
+* qcache_free_memory
+* qcache_hits
+* qcache_inserts
+* qcache_lowmem_prunes
+* qcache_not_cached
+* qcache_queries_in_cache
+* qcache_total_blocks
+* queries
+* questions
+* rpl_status
+* select_full_join
+* select_full_range_join
+* select_range
+* select_range_check
+* select_scan
+* slave_open_temp_tables
+* slave_retried_transactions
+* slave_running
+* slow_launch_threads
+* slow_queries
+* sort_merge_passes
+* sort_range
+* sort_rows
+* sort_scan
+* ssl_accept_renegotiates
+* ssl_accepts
+* ssl_callback_cache_hits
+* ssl_cipher
+* ssl_cipher_list
+* ssl_client_connects
+* ssl_connect_renegotiates
+* ssl_ctx_verify_depth
+* ssl_ctx_verify_mode
+* ssl_default_timeout
+* ssl_finished_accepts
+* ssl_finished_connects
+* ssl_session_cache_hits
+* ssl_session_cache_misses
+* ssl_session_cache_mode
+* ssl_session_cache_overflows
+* ssl_session_cache_size
+* ssl_session_cache_timeouts
+* ssl_sessions_reused
+* ssl_used_session_cache_entries
+* ssl_verify_depth
+* ssl_verify_mode
+* ssl_version
+* table_locks_immediate
+* table_locks_waited
+* tc_log_max_pages_used
+* tc_log_page_size
+* tc_log_page_waits
+* threads_cached
+* threads_connected
+* threads_created
+* threads_running
+* uptime
+* uptime_since_flush_status
+
+d) Apache HTTP Profile
+
+Apache HTTPD profile provides HTTP server instrumentation data. Instrumentation elements are:
+
+* total_accesses
+* total_kbytes
+* uptime
+* reqpersec
+* bytespersec
+* bytesperreq
+* busyworkers
+* idleworkers
+* scoreboard
 
 3. Errors
 
-If module cannot return data - what to put in json
+When a profile cannot return data, it will return an error tuple in the JSON format as follows:
 
+{
+	error: "error message",
+	errorcode: -1
+}
 
+where -1 is an example of the error code
