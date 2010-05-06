@@ -38,7 +38,15 @@ class SystemProfile:
 		uname = os.uname()
 		pythonVersion = sys.version 
 		hostname = socket.gethostname()
-		lines = subprocess.Popen(["/usr/bin/lscpu"], stdout=subprocess.PIPE).communicate()[0].split("\n")
+
+		try:
+			lines = subprocess.Popen(["/usr/bin/lscpu"], stdout=subprocess.PIPE).communicate()[0].split("\n")
+
+		except OSError:
+			returnValue = {}
+			returnValue["error"] = "Unable to execute /usr/bin/lscpu"
+			returnValue["errorcode"] = 1
+			return returnValue
 
 		for line in lines:
 
@@ -49,7 +57,14 @@ class SystemProfile:
 
 			except IndexError: pass
 
-		lines = subprocess.Popen(["/sbin/lspci"], stdout=subprocess.PIPE).communicate()[0].split("\n")
+		try:
+			lines = subprocess.Popen(["/sbin/lspci"], stdout=subprocess.PIPE).communicate()[0].split("\n")
+
+		except OSError:
+			returnValue = {}
+			returnValue["error"] = "Unable to execute /sbin/lspci"
+			returnValue["errorcode"] = 1
+			return returnValue
 
 		for line in lines:
 
@@ -60,22 +75,32 @@ class SystemProfile:
 
 			except IndexError: pass
 
-		fp = open("/proc/partitions", "r")
-		lines = fp.read().split("\n")
-		fp.close()
+		try:
+			fp = open("/proc/partitions", "r")
+			lines = fp.read().split("\n")
+			fp.close()
 
-		for line in lines:
+			for line in lines[2:-2]:
+				columns = line.split()
+				diskData.append(columns)
 
-			columns = line.split()
+		except IOError:
+			returnValue = {}
+			returnValue["error"] = "Unable to read /proc/partitions"
+			returnValue["errorcode"] = 1
+			return returnValue
 
-			if len(columns) == 0: continue
+		try:
+			self.getOS()
 
-			diskData.append(columns)
-
-
-		self.getOS()
+		except IOError:
+			returnValue = {}
+			returnValue["error"] = "Unable to read /etc/*-release or /etc/*-version"
+			returnValue["errorcode"] = 1
+			return returnValue
 
 		return { "uname": uname, "python_version": pythonVersion, "hostname": hostname, "cpu_data": cpuData, "pci_data": pciData, "disk_data": diskData, "os_name": self.osName, "os_version": self.osVersion}
+
 
 	def getOS(self):
 
@@ -89,9 +114,13 @@ class SystemProfile:
 
 			if os.path.isfile(filename):
 
-				fp = open(filename, "r")
-				data = fp.read()
-				fp.close()
+				try:
+					fp = open(filename, "r")
+					data = fp.read()
+					fp.close()
+
+				except:
+					raise
 
 				if (data.find("Fedora") >= 0):
 					self.osName = "Fedora"

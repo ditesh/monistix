@@ -38,20 +38,27 @@ class ApacheProfile:
 
 		returnValue = {}
 
-		conn = httplib.HTTPConnection(self.host + ":" + str(self.port))
-		conn.request("GET", "/server-status?auto")
-		resp = conn.getresponse()
+		try:
+			conn = httplib.HTTPConnection(self.host + ":" + str(self.port))
+			conn.request("GET", "/server-status?auto")
+			resp = conn.getresponse()
 
-		if resp.status == 200:
+			if resp.status == 200:
 
-			data = resp.read().split("\n")
+				data = resp.read().split("\n")
 
-			for line in data:
+				for line in data:
 
-				try:
-					items = line.split(":")
-					returnValue[items[0].strip().lower().replace(" ", "_")] = items[1].strip()
+					try:
+						items = line.split(":")
+						returnValue[items[0].strip().lower().replace(" ", "_")] = items[1].strip()
 
-				except IndexError: continue
+					except IndexError: continue
+
+		except httplib.HTTPException:
+			returnValue = {}
+			returnValue["error"] = "Unable to connect to " + self.host + ":" + str(self.port) + "/server-status?auto"
+			returnValue["errorcode"] = 1
+			return returnValue
 
 		return returnValue

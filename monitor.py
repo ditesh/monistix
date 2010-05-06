@@ -38,11 +38,11 @@ class Dispatcher:
 				module = getattr(profiles, service)
 				obj = getattr(module, service.capitalize() + "Profile")
 
-					try:
-						configValues = configuration.services.items(service)
+				try:
+					configValues = configuration.services.items(service)
 
-					except ConfigParser.NoSectionError:
-						configValues = []
+				except ConfigParser.NoSectionError:
+					configValues = []
 
 				self.services[service] = obj(configValues)
 
@@ -52,14 +52,13 @@ class Dispatcher:
 		if len(self.services) == 0:
 			print >> sys.stderr, "No modules imported, will not continue"
 			raise
-			
-
 
 	def dispatch(self):
 
 		for service in self.services:
 			data = self.services[service].getData()
 			self.ms.store(service, data)
+
 
 	def sync(self):
 
@@ -80,12 +79,12 @@ class Store:
 		self.server = server
 		self.cache = cache
 
-	def store(self, key, value):
+	def store(self, service, data):
 
 		self.data.append({
 
 				"timestamp": time.time(),
-				"data": {key: value}
+				"data": {service: data}
 
 			})
 

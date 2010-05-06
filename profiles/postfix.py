@@ -31,6 +31,9 @@ class PostfixProfile:
 		if not os.path.exists(self.qshapePath):
 			raise IOError
 
+		if not os.path.exists(self.maillogPath):
+			raise IOError
+
 		self.maillogTailPosition = 0
 
 	def getData(self):
@@ -38,51 +41,66 @@ class PostfixProfile:
 		returnValue = {}
 
 		for item in ["active", "deferred", "bounce", "corrupt", "incoming", "hold"]:
-			returnValue[item] = self.getQueueData(item)
+			try:
+				returnValue[item] = self.getQueueData(item)
+
+			except OSError:
+				returnValue = {}
+				returnValue["error"] = "Unable to execute " + self.qshapePath
+				returnValue["errorcode"] = 1
+				return returnValue
 
 		try:
-			returnValue["mail_volume"] = getMailStats()
+			stats = getMailStats()
+			returnValue["volume"] = stats["volume"]
+			returnValue["rejected"] = stats["rejected"]
+			returnValue["delivered"] = stats["delivered"]
 
 		except IOError:
-			returnValue["mail_volume"] = -1
+			returnValue = {}
+			returnValue["error"] = "Unable to read " + self.maillogPath
+			returnValue["errorcode"] = 1
+			return returnValue
 
 		return returnValue
 
 
 	def getMailVolume(self):
 
-		if not os.path.exists(self.maillogPath):
-			raise IOError
-
 		volume = 0
 		rejected = 0
 		delivered = 0
-		filesize = os.path.getsize(self.maillogPath)
 
-		if (filesize < self.maillogTailPosition):
-			self.maillogTailPosition = 0
+		try:
+			filesize = os.path.getsize(self.maillogPath)
 
-		fp = open(self.maillogPath, "r")
-		fp.seek(self.maillogTailPosition)
+			if (filesize < self.maillogTailPosition):
+				self.maillogTailPosition = 0
 
-		while True:
+			fp = open(self.maillogPath, "r")
+			fp.seek(self.maillogTailPosition)
 
-			line = fp.readline()
-			self.maillogTailPosition = fp.tell()
+			while True:
 
-			if line == "":
-				break
+				line = fp.readline()
+				self.maillogTailPosition = fp.tell()
 
-			matches = re.search('.*?qmgr.*?from=.*?size=([0-9]+)', line)
+				if line == "":
+					break
 
-			if matches != None:
-				volume += int(matches.group(1))
-				delivered += 1
+				matches = re.search('.*?qmgr.*?from=.*?size=([0-9]+)', line)
 
-			matches = re.search('.*?reject.*', line)
+				if matches != None:
+					volume += int(matches.group(1))
+					delivered += 1
 
-			if matches != None:
-				rejected += 1
+				matches = re.search('.*?reject.*', line)
+
+				if matches != None:
+					rejected += 1
+
+		except:
+			raise
 
 		return { "volume": volume, "rejected": rejected, "delivered": delivered }
 
@@ -91,7 +109,12 @@ class PostfixProfile:
 
 		returnValue = {}
 
-		lines = subprocess.Popen([self.qshapePath, queue], stdout=subprocess.PIPE).communicate()[0].split("\n")
+		try:
+			lines = subprocess.Popen([self.qshapePath, queue], stdout=subprocess.PIPE).communicate()[0].split("\n")
+
+		except OSError:
+			raise
+
 		returnValue["totals"] = lines[1:].split()
 
 		for line in lines[2:]:

@@ -55,7 +55,15 @@ class MysqlProfile:
 		args.append("extended")
 		args.append("status")
 
-		values = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+		try:
+			values = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+
+		except OSError:
+			returnValue = {}
+			returnValue["error"] = "Unable to execute " + self.mysqladminPath
+			returnValue["errorcode"] = 1
+			return returnValue
+
 
 		if values[1].find("error") == True:
 			return {}
