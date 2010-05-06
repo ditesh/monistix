@@ -55,8 +55,8 @@ def createDaemon():
 		try:
 			pid = os.fork()
 
-		except OSError, e:
-			raise Exception, "%s [%d]" % (e.strerror, e.errno)
+		except OSError:
+			raise
 
 		if (pid == 0):
 			os.chdir(WORKDIR)
@@ -91,12 +91,13 @@ def createDaemon():
 
 
 def handler(signum, frame):
-	print "SIGHUP caught, shutting down slashproc-daemon ..."
+	syslog.syslog(syslog.LOG_INFO, "SIGHUP caught, shutting down slashproc-daemon ...")
 	sys.exit(0)
 
 
 if __name__ == "__main__":
 
+	syslog.openlog("slashproc")
 	retCode = createDaemon()
 	signal.signal(signal.SIGHUP, handler)
 	i = 0

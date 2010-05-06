@@ -60,6 +60,7 @@ class PostfixProfile:
 			returnValue = {}
 			returnValue["error"] = "Unable to read " + self.maillogPath
 			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
 		return returnValue

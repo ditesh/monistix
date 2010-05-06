@@ -11,6 +11,7 @@ import sys
 import json
 import time
 import config
+import syslog
 import hashlib
 import httplib
 import profiles
@@ -48,10 +49,10 @@ class Dispatcher:
 				self.services[service] = obj(configValues)
 
 			except (ImportError, AttributeError):
-				print >> sys.stderr, "Unable to correctly import module profiles/" + service + ".py"
+				syslog.syslog(syslog.LOG_WARNING, "Unable to correctly import module profiles/" + service + ".py")
 
 		if len(self.services) == 0:
-			print >> sys.stderr, "No modules imported, will not continue"
+			syslog.syslog(syslog.LOG_WARNING, "No modules imported, will not continue")
 			raise
 
 	def dispatch(self):
@@ -102,7 +103,7 @@ class Store:
 
 		except:
 
-			print >> sys.stderr, "Unable send monitoring data upstream (" + self.server + "), attempting to save to disk"
+			syslog.syslog(syslog.LOG_WARNING, "Unable send monitoring data upstream (" + self.server + "), attempting to save to disk")
 
 			try:
 				self.save()
@@ -125,13 +126,13 @@ class Store:
 				resp = conn.getresponse()
 
 			except:
-				print >> sys.stderr, "Error: unable to connect to server, attempting to save monitoring data"
+				syslog.syslog(syslog.LOG_WARNING, "Unable to connect to server, attempting to save monitoring data")
 
 				try:
 					self.save(data)
 
 				except:
-					print >> sys.stderr, "Error: unable to save monitoring data"
+					syslog.syslog(syslog.LOG_WARNING, "Error: unable to save monitoring data")
 					raise
 
 				raise httplib.HTTPException
@@ -176,7 +177,7 @@ class Store:
 			fp.close()
 
 		except:
-			print >> sys.stderr, "Unable save monitoring data, cannot write to cache path (" + filePath + "), check permission and path"
+			syslog.syslog(syslog.LOG_WARNING, "Unable save monitoring data, cannot write to cache path (" + filePath + "), check permission and path")
 			raise
 
 		# empty out data once file has been successfully written

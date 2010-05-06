@@ -18,6 +18,7 @@ __email__ = "ditesh@gathani.org"
 import os
 import sys
 import socket
+import syslog
 import subprocess
 
 try:
@@ -43,9 +44,11 @@ class SystemProfile:
 			lines = subprocess.Popen(["/usr/bin/lscpu"], stdout=subprocess.PIPE).communicate()[0].split("\n")
 
 		except OSError:
+
 			returnValue = {}
 			returnValue["error"] = "Unable to execute /usr/bin/lscpu"
 			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
 		for line in lines:
@@ -64,6 +67,7 @@ class SystemProfile:
 			returnValue = {}
 			returnValue["error"] = "Unable to execute /sbin/lspci"
 			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
 		for line in lines:
@@ -88,6 +92,7 @@ class SystemProfile:
 			returnValue = {}
 			returnValue["error"] = "Unable to read /proc/partitions"
 			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
 		try:
@@ -97,6 +102,7 @@ class SystemProfile:
 			returnValue = {}
 			returnValue["error"] = "Unable to read /etc/*-release or /etc/*-version"
 			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
 		return { "uname": uname, "python_version": pythonVersion, "hostname": hostname, "cpu_data": cpuData, "pci_data": pciData, "disk_data": diskData, "os_name": self.osName, "os_version": self.osVersion}

@@ -62,6 +62,7 @@ class MysqlProfile:
 			returnValue = {}
 			returnValue["error"] = "Unable to execute " + self.mysqladminPath
 			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
 

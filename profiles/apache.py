@@ -59,6 +59,7 @@ class ApacheProfile:
 			returnValue = {}
 			returnValue["error"] = "Unable to connect to " + self.host + ":" + str(self.port) + "/server-status?auto"
 			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
 		return returnValue
