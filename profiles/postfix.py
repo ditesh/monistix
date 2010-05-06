@@ -1,4 +1,4 @@
-"""Postfix profile provides data mail queues"""
+"""Postfix profile provides data on mail queues"""
 
 __author__ = "Ditesh Shashikant Gathani"
 __copyright__ = "Copyright (C) 2010 Ditesh Shashikant Gathani"

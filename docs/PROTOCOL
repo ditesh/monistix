@@ -392,7 +392,7 @@ MySQL profile provides MySQL specific instrumentation data. Instrumentation elem
 
 d) Apache HTTP Profile
 
-Apache HTTPD profile provides HTTP server instrumentation data. Instrumentation elements are:
+Apache HTTPd profile provides HTTP server instrumentation data. Instrumentation elements are:
 
 * total_accesses
 * total_kbytes
@@ -404,13 +404,21 @@ Apache HTTPD profile provides HTTP server instrumentation data. Instrumentation 
 * idleworkers
 * scoreboard
 
+e) Postfix Profile
+
+Postfix profile provides data on mail queues:
+
+* volume
+* rejected
+* delivered
+
 3. Errors
 
 When a profile cannot return data, it will return an error tuple in the JSON format as follows:
 
 {
 	error: "error message",
-	errorcode: -1
+	errorcode: 1
 }
 
-where -1 is an example of the error code
+where 1 is an example of the error code
