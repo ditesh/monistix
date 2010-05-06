@@ -16,6 +16,7 @@ import hashlib
 import httplib
 import profiles
 import traceback
+import ConfigParser
 
 """Module loader and dispatcher"""
 class Dispatcher:
@@ -41,7 +42,7 @@ class Dispatcher:
 				obj = getattr(module, service.capitalize() + "Profile")
 
 				try:
-					configValues = configuration.services.items(service)
+					configValues = self.configuration.services.items(service)
 
 				except ConfigParser.NoSectionError:
 					configValues = []
@@ -177,7 +178,7 @@ class Store:
 			fp.close()
 
 		except:
-			syslog.syslog(syslog.LOG_WARNING, "Unable save monitoring data, cannot write to cache path (" + filePath + "), check permission and path")
+			syslog.syslog(syslog.LOG_WARNING, "Unable to save monitoring data, cannot write to cache path (" + filePath + "), check permission and path")
 			raise
 
 		# empty out data once file has been successfully written

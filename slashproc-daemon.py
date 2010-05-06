@@ -11,8 +11,10 @@ import os
 import sys
 import time
 import signal
+import syslog
 import monitor
 import traceback
+from optparse import OptionParser
 
 # Basic sanity checks
 try:
@@ -87,25 +89,42 @@ def createDaemon():
 	os.dup2(0, 1)
 	os.dup2(0, 2)
 
-	return(0)
+	return pid
 
 
 def handler(signum, frame):
+	global pidPath
+	os.remove(pidPath)
 	syslog.syslog(syslog.LOG_INFO, "SIGHUP caught, shutting down slashproc-daemon ...")
 	sys.exit(0)
-
 
 if __name__ == "__main__":
 
 	syslog.openlog("slashproc")
-	retCode = createDaemon()
+	pid = os.getpid()
+
+	parser = OptionParser()
+	parser.add_option("-p", "--pid-path", dest="pid", default="/tmp",
+			  help="Location of the PID file")
+
+        (options, args) = parser.parse_args()
+	pidPath = os.path.join(options.pid, "slashproc.pid")
+
+	try:
+		fp = open(pidPath, "w")
+		fp.write(str(pid))
+		fp.close()
+
+	except:
+		syslog.syslog(syslog.LOG_ERR, "Cannot create PID file in " + os.path.join(options.pid, "slashproc") + ", exiting ...")
+		sys.exit(1)
+
+	createDaemon()
 	signal.signal(signal.SIGHUP, handler)
-	i = 0
 
 	while True:
-
 		md.dispatch()
 		md.sync()
 		time.sleep(60)
 
-	sys.exit(retCode)
+	sys.exit(0)
