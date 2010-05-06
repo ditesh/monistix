@@ -2,8 +2,14 @@ import profiles
 
 class SystemProfileTest:
 
-	def __init__(self): pass
+	def __init__(self, config):
+		self.config = config
 
 	def run(self):
-		profile = profiles.system.SystemProfile()
-		print(profile.getData())
+
+		try:
+			profile = profiles.system.SystemProfile(self.config)
+			print(profile.getData())
+
+		except:
+			raise

@@ -4,8 +4,11 @@
 import sys
 import tests
 import config
+import syslog
 import ConfigParser
 import traceback
+
+syslog.openlog("slashproc")
 
 def main(argv=None):
 
@@ -46,8 +49,8 @@ def main(argv=None):
 	try:
 		obj.run()
 
-	except IOError:
-		print >> sys.stderr, "Unable to correctly run module (tests/" + modulename + ".py), checking configuration"
+	except  IOError:
+		print >> sys.stderr, "Unable to correctly run module (tests/" + modulename + ".py), check configuration"
 		return 1
 
 

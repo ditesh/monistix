@@ -56,9 +56,9 @@ class ApacheProfile:
 
 					except IndexError: continue
 
-		except httplib.HTTPException:
+		except:
 			returnValue = {}
-			returnValue["error"] = "Unable to connect to " + self.host + ":" + str(self.port) + "/server-status?auto"
+			returnValue["error"] = "Unable to connect to http://" + self.host + ":" + str(self.port) + "/server-status?auto"
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue

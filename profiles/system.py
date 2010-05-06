@@ -29,7 +29,8 @@ except ImportError:
 
 class SystemProfile:
 
-	def __init__(self): pass
+	def __init__(self, config):
+		self.config = config
 
 	def getData(self):
 
@@ -74,7 +75,7 @@ class SystemProfile:
 
 			try:
 				key = line[0:7]
-				value = line[9]
+				value = line[8:]
 				pciData[key] = value
 
 			except IndexError: pass

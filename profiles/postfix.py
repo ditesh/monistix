@@ -30,9 +30,11 @@ class PostfixProfile:
 				self.maillogPath = value
 
 		if not os.path.exists(self.qshapePath):
+			syslog.syslog(syslog.LOG_WARNING, "Unable to find qshape (" + self.qshapePath+")")
 			raise IOError
 
 		if not os.path.exists(self.maillogPath):
+			syslog.syslog(syslog.LOG_WARNING, "Unable to find maillog (" + self.qshapePath+")")
 			raise IOError
 
 		self.maillogTailPosition = 0

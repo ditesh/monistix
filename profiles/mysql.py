@@ -66,9 +66,12 @@ class MysqlProfile:
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
-
-		if values[1].find("error") == True:
-			return {}
+		if "error" in values[1]:
+			returnValue = {}
+			returnValue["error"] = "Unable to execute " + self.mysqladminPath
+			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
+			return returnValue
 
 		lines = values[0].split("\n")[3:-3]
 

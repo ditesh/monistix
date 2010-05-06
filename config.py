@@ -27,23 +27,11 @@ class MonitorConf:
 		if not (os.access(filePath, os.R_OK or os.W_OK)):
 			raise IOError
 
-		if not (os.access(os.path.join(filePath, 'client.conf'), os.R_OK and os.W_OK)):
+		if not (os.access(os.path.join(filePath, 'client.conf'), os.R_OK)):
 			raise IOError
 
-		if not (os.access(os.path.join(filePath, 'services.conf'), os.R_OK and os.W_OK)):
+		if not (os.access(os.path.join(filePath, 'services.conf'), os.R_OK)):
 			raise IOError
-
-		if not os.path.exists(os.path.join(filePath, 'client.conf')):
-			try:
-				open(os.path.join(filePath, 'client.conf'), 'w').close() 
-			except:
-				raise IOError
-
-		if not os.path.exists(os.path.join(filePath, 'services.conf')):
-			try:
-				open(os.path.join(filePath, 'services.conf'), 'w').close() 
-			except:
-				raise IOError
 
 	# Read configuration file
 	def readClientConfig(self):
@@ -87,6 +75,15 @@ class MonitorConf:
 	# Get list of services
 	def getServices(self):
 
+		if not (os.access(os.path.join(filePath, 'services.conf'), os.W_OK)):
+			raise IOError
+
+		if not os.path.exists(os.path.join(filePath, 'services.conf')):
+			try:
+				open(os.path.join(filePath, 'services.conf'), 'w').close() 
+			except:
+				raise IOError
+
 		try:
 			conn = httplib.HTTPConnection(self.server)
 			conn.request("GET", "/services.php?key=" + self.key)
@@ -108,9 +105,17 @@ class MonitorConf:
 		else:
 			raise Exception
 
-
 	# Validate the account
 	def reconfigure(self, key, server):
+
+		if not (os.access(os.path.join(filePath, 'client.conf'), os.W_OK)):
+			raise IOError
+
+		if not os.path.exists(os.path.join(filePath, 'client.conf')):
+			try:
+				open(os.path.join(filePath, 'client.conf'), 'w').close() 
+			except:
+				raise IOError
 
 		self.key = key
 		self.server = server
