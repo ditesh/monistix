@@ -7,6 +7,7 @@ __version__ = "0.1"
 __email__ = "ditesh@gathani.org"
 
 import os
+import syslog
 import subprocess
 
 class MysqlProfile:

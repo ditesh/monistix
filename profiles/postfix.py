@@ -8,6 +8,7 @@ __email__ = "ditesh@gathani.org"
 
 import os
 import re
+import syslog
 import subprocess
 
 class PostfixProfile:
