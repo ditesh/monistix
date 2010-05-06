@@ -7,7 +7,8 @@ Each time the client collects instrumentation information, it is stored in a sin
 {
 	{
 
-		"timestamp": 1273138100.123456
+		"hash": "0946fe3412c06632a8869cc55b7961ee731d20123b10a65ad252b8e79b69b13f77f7d122fa5bd37f669d064c8895c37f4629e919d0c98f199318c4c8b84136fe",
+		"timestamp": 1273138100.123456,
 		"data": {
 
 				"mysql": {
@@ -24,7 +25,8 @@ Each time the client collects instrumentation information, it is stored in a sin
 	},
 	{
 
-		"timestamp": 1273138160.123456
+		"hash": "7272b857a8b1fd5823ef41dfa68d9a7fe942e78b065ff85257f12d06c298a9ca2ddb6c2d3342273948b8e66220bbba53b90a2945d21489f2b9354ee69a63a4f5",
+		"timestamp": 1273138160.123456,
 		"data": {
 
 				"mysql": {
@@ -40,7 +42,7 @@ Each time the client collects instrumentation information, it is stored in a sin
 	},
 }
 
-As can be clearly seen in the example, two services are being monitored - Apache HTTP and MySQL. Both services are returning some instrumentation elements which have some value. There are two time instances in the example given above.
+As can be clearly seen in the example, two services are being monitored - Apache HTTP and MySQL. Both services are returning some instrumentation elements which have some value. There are two time instances in the example given above. In each time instance, a SHA512 hash is stored to avoid the server from receiving duplicate data.
 
 
 2. Profiles

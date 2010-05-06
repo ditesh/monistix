@@ -11,6 +11,7 @@ import sys
 import json
 import time
 import config
+import hashlib
 import httplib
 import profiles
 import traceback
@@ -83,6 +84,7 @@ class Store:
 
 		self.data.append({
 
+				"hash": hashlib.sha512(str(time.time())).hexdigest(),
 				"timestamp": time.time(),
 				"data": {service: data}
 
@@ -92,7 +94,11 @@ class Store:
 	def sync(self):
 
 		try:
-			self.sendUpstream()
+			data = json.dumps(self.data)
+			self.sendUpstream(data)
+			self.data = []
+
+			self.sendCacheUpstream()
 
 		except:
 
@@ -104,11 +110,10 @@ class Store:
 			except:
 				raise
 
-	def sendUpstream(self):
+	def sendUpstream(self, data):
 
 		key = self.key
 		server = self.server
-		data = json.dumps(self.data)
 
 		try:
 			params = urllib.urlencode(data)
@@ -131,11 +136,33 @@ class Store:
 
 				raise httplib.HTTPException
 
-			self.data = []
-
 		except:
-			raise httplib.HTTPException
+			raise httplib.HTTPException()
 
+
+	def sendCacheUpstream(self):
+
+		dir = os.listdir(self.cache)
+
+		for file in dir:
+			try:
+				fp = open(os.path.join(self.cache, file), "r")
+				data = fp.read()
+				fp.close()
+
+				try:
+					sendUpstream(data)
+
+					try:
+						os.remove(file)
+
+					except IOError:
+						continue
+
+				except httplib.HTTPException:
+					break			# don't bother if its not possible to connect
+
+			except IOError: continue
 
 
 	def save(self):
