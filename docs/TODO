@@ -1,5 +1,7 @@
 TODO
 
+1a. Add distinguishing of services which monitor external machines
+
 2. Add check for diskspace <= 5% (optionally to not write to disk if no space)
 
 3. Add the following plugins:
@@ -8,4 +10,4 @@ a) Sendmail
 c) Dovecot
 d) Squid
 
-4. Test sending upstream
+4. Test "tail" behaviour in postfix profile
