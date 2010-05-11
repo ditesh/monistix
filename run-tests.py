@@ -2,11 +2,12 @@
 """Test runner"""
 
 import sys
+import json
 import tests
 import config
 import syslog
-import ConfigParser
 import traceback
+import ConfigParser
 
 syslog.openlog("slashproc")
 
@@ -34,7 +35,8 @@ def main(argv=None):
 		configValues = configuration.services.items(modulename)
 
 	except ConfigParser.NoSectionError:
-		configValues = []
+		print >> sys.stderr, "Incorrect or missing configuration for profile " + modulename
+		return 1
 
 	try:
 		tests = __import__("tests")
@@ -43,11 +45,12 @@ def main(argv=None):
 
 	except:
 		traceback.print_exc(file=sys.stdout)
-		print >> sys.stderr, "Unable to correctly import module (tests/" + modulename + ".py)"
+		print >> sys.stderr, "Unable to correctly import profile (tests/" + modulename + ".py)"
 		return 1
 
 	try:
-		obj.run()
+		data = obj.run()
+		print json.dumps(data, indent=4)
 
 	except  IOError:
 		print >> sys.stderr, "Unable to correctly run module (tests/" + modulename + ".py), check configuration"

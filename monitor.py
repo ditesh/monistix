@@ -59,8 +59,10 @@ class Dispatcher:
 	def dispatch(self):
 
 		for service in self.services:
+			startTimestamp = time.time()
 			data = self.services[service].getData()
-			self.ms.store(service, data)
+			timeTaken = time.time() - startTimestamp
+			self.ms.store(service, data, timeTaken)
 
 
 	def sync(self):
@@ -82,12 +84,13 @@ class Store:
 		self.server = server
 		self.cache = cache
 
-	def store(self, service, data):
+	def store(self, service, data, timeTaken):
 
 		self.data.append({
 
 				"hash": hashlib.sha512(str(time.time())).hexdigest(),
 				"timestamp": time.time(),
+				"time_taken": timeTaken,
 				"data": {service: data}
 
 			})

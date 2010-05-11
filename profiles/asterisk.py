@@ -9,6 +9,7 @@ __email__ = "ditesh@gathani.org"
 import socket 
 import syslog
 import httplib
+from libs.exceptions import *
 
 class AsteriskProfile:
 
@@ -37,15 +38,25 @@ class AsteriskProfile:
 			if key == "password":
 				self.password = value
 
+		if self.username == None or self.password == None:
+			syslog.syslog(syslog.LOG_WARNING, "Invalid configuration")
+			raise InvalidConfiguration("Asterisk username and/or password not specified")
+
 		try:
 			self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 			self.socket.connect((self.host, self.port))
+			self.socket.recv(self.buffer)	# a hack
 			self.socket.send(self.getLoginText())
-			data = self.socket.recv(self.buffer)
+			data = self.getSocketData()
 
-			if "error" in data:
-				syslog.syslog(syslog.LOG_WARNING, "Unable to connect to ami://" + self.host + ":" + str(self.port))
+			if "Authentication failed" in data:
+				syslog.syslog(syslog.LOG_WARNING, "Unable to authenticate to ami://" + self.host + ":" + str(self.port))
 				raise socket.error
+
+			return
+
+		except socket.error:
+			raise
 
 		except:
 			syslog.syslog(syslog.LOG_WARNING, "Unable to connect to ami://" + self.host + ":" + str(self.port))
@@ -54,14 +65,15 @@ class AsteriskProfile:
 	def getData(self):
 
 		returnValue = {}
-		data = self.getChannels()
 		returnValue["all_channels"] = self.getChannels()
 		returnValue["sip_peers"] = self.getSIPPeers()
 		returnValue["sip_channels"] = self.getSIPChannels()
-		returnValue["meetme"] = self.getMeetme()
-		returnValue["voicemail_users"] = self.getVoicemailUsers()
+#		returnValue["zap_channels"] = self.getZapChannels()
+#		returnValue["meetme"] = self.getMeetme()
+#		returnValue["voicemail_users"] = self.getVoicemailUsers()
 
 		self.socket.close()
+		return returnValue
 
 	def getChannels(self):
 
@@ -72,13 +84,21 @@ class AsteriskProfile:
 		returnValue["channels"] = []
 
 		try:
-			commandText = self.getCommandOutput('show channels')
-			self.socket.send(commandText)
-			lines = self.socket.recv(self.buffer)
+			self.sendCommand('core show channels')
+			data = self.getSocketData()
 
-			if len(lines) > 2:
+			if "Permission denied" in data:
+				returnValue = {}
+				returnValue["error"] = "No permission to run command 'core show channels' on ami://" + self.host + ":" + str(self.port)
+				returnValue["errorcode"] = 1
+				syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
+				return returnValue
 
-				for line in lines[1:-2]:
+			lines = data.split("\n")
+
+			if len(lines) > 4:
+
+				for line in lines[1:-3]:
 
 					data = {}
 					items = line.split()
@@ -99,12 +119,14 @@ class AsteriskProfile:
 
 					returnValue["channels"].append(data)
 
-				returnValue["active_channels"] = lines[-1].split(" ")[0]
-				returnValue["active_calls"] = lines[-1].split(" ")[1]
+				returnValue["active_channels"] = lines[-3].split(" ")[0].strip()
+				returnValue["active_calls"] = lines[-2].split(" ")[0].strip()
+				returnValue["calls_processed"] = lines[-1].split(" ")[0].strip()
 
 			else:
 				returnValue["active_channels"] = 0
 				returnValue["active_calls"] = 0
+				returnValue["calls_processed"] = 0
 
 			returnValue["zap"] = zap
 			returnValue["sip"] = sip
@@ -112,7 +134,7 @@ class AsteriskProfile:
 
 		except:
 			returnValue = {}
-			returnValue["error"] = "Unable to connect to ami://" + self.host + ":" + str(self.port)
+			returnValue["error"] = "Unable to run command 'core show channels' on ami://" + self.host + ":" + str(self.port)
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
@@ -125,14 +147,13 @@ class AsteriskProfile:
 		returnValue["peers"] = []
 
 		try:
-
-			commandText = self.getCommandOutput('sip show peers')
-			self.socket.send(commandText)
-			lines = self.socket.recv(self.buffer)
+			self.sendCommand('sip show peers')
+			data = self.getSocketData()
+			lines = data.split("\n")
 
 			if len(lines) > 2:
 
-				for line in lines[1:-2]:
+				for line in lines[1:-1]:
 
 					data = {}
 					items = line.split()
@@ -140,10 +161,14 @@ class AsteriskProfile:
 					data["name"] = items[0]
 					data["host"] = items[1]
 					data["dynamic"] = items[2]
-					data["nat"] = items[3]
-					data["acl"] = items[3]
-					data["port"] = items[3]
-					data["status"] = items[3]
+					data["nat"] = ""
+
+					if items[-3] == "Y":
+						data["nat"] = items[3]
+
+#					data["acl"] = items[3]
+					data["port"] = items[-2]
+					data["status"] = items[-1]
 
 					returnValue["peers"].append(data)
 
@@ -173,16 +198,16 @@ class AsteriskProfile:
 	def getSIPChannels(self):
 
 		returnValue = {}
+		returnValue["peers"] = []
 
 		try:
-
-			commandText = self.getCommandOutput('sip show channels')
-			self.socket.send(commandText)
-			lines = self.socket.recv(self.buffer)
+			self.sendCommand('sip show channels')
+			data = self.getSocketData()
+			lines = data.split("\n")
 
 			if len(lines) > 2:
 
-				for line in lines[1:-2]:
+				for line in lines[1:-1]:
 
 					data = {}
 					items = line.split()
@@ -190,7 +215,6 @@ class AsteriskProfile:
 					data["peer"] = items[0]
 					data["user"] = items[1]
 					data["call_id"] = items[2]
-					data["seq"] = items[3]
 					data["format"] = items[3] + " " + items[4]
 					data["hold"] = items[5]
 					data["last_message"] = items[6] + " " + items[7]
@@ -243,6 +267,13 @@ class AsteriskProfile:
 			else:
 				returnValue["meetme_users"] = 0
 
+		except socket.timeout:
+			returnValue = {}
+			returnValue["error"] = "Timeout when attempting to connect to ami://" + self.host + ":" + str(self.port)
+			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
+			return returnValue
+
 		except:
 			returnValue = {}
 			returnValue["error"] = "Unable to connect to ami://" + self.host + ":" + str(self.port)
@@ -260,7 +291,7 @@ class AsteriskProfile:
 
 			commandText = self.getCommandOutput('show voicemail users')
 			self.socket.send(commandText)
-			lines = self.socket.recv(self.buffer)
+			lines = self.getSocketData()
 
 			if len(lines) > 2:
 
@@ -281,6 +312,13 @@ class AsteriskProfile:
 			else:
 				returnValue["users"] = {}
 
+		except socket.timeout:
+			returnValue = {}
+			returnValue["error"] = "Timeout when attempting to connect to ami://" + self.host + ":" + str(self.port)
+			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
+			return returnValue
+
 		except:
 			returnValue = {}
 			returnValue["error"] = "Unable to connect to ami://" + self.host + ":" + str(self.port)
@@ -294,17 +332,36 @@ class AsteriskProfile:
 
 		returnValue = ['Action: login']
 		returnValue.append('Username: '+self.username);
-		returnValue.append('Secret: '+self.secret);
+		returnValue.append('Secret: '+self.password);
 		returnValue.append('Events: off')
 		returnValue.append('')
+		returnValue.append('')
 
-		return ''.join(returnValue)
+		return '\n'.join(returnValue)
 
 
-	def getCommandOutput(self, command):
+	def sendCommand(self, command):
 
 		returnValue = ['Action: command']
 		returnValue.append('Command: '+command)
 		returnValue.append('')
+		returnValue.append('')
 
-		return ''.join(returnValue)
+		commandText = '\n'.join(returnValue)
+		self.socket.send(commandText)
+
+
+	def getSocketData(self):
+
+		data = ''
+		
+		while True:
+ 
+			chunk = self.socket.recv(self.buffer)
+			data = data + chunk
+ 
+			if data[len(data)-4:] == "\r\n\r\n":
+				break
+
+		data = data[39:-19].strip()
+		return data
