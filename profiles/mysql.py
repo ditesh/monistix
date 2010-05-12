@@ -18,6 +18,7 @@ class MysqlProfile:
 		self.config = config
 		self.username = None
 		self.password = None
+		self.hostname = "127.0.0.1"
 		self.mysqladminPath = "/usr/bin/mysqladmin"
 
 		for val in config:
@@ -33,6 +34,9 @@ class MysqlProfile:
 			if key == "port":
 				self.port = value
 
+			if key == "hostname":
+				self.hostname = value
+
 		if not os.path.exists(self.mysqladminPath):
 			raise IOError
 
@@ -41,6 +45,8 @@ class MysqlProfile:
 		returnValue = {}
 
 		args = [self.mysqladminPath]
+		args.append("-h")
+		args.append(self.hostname)
 
 		if self.username != None:
 			args.append("-u")

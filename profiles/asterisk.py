@@ -15,19 +15,19 @@ class AsteriskProfile:
 
 	def __init__(self, config):
 
-		self.host = "localhost"
 		self.port = 5038
 		self.buffer = 4096
 		self.config = config
 		self.username = None
 		self.password = None
+		self.hostname = "localhost"
 
 		for val in config:
 
 			(key, value) = val
 
-			if key == "host":
-				self.host = value
+			if key == "hostname":
+				self.hostname = value
 
 			if key == "port":
 				self.port = value
@@ -44,13 +44,13 @@ class AsteriskProfile:
 
 		try:
 			self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			self.socket.connect((self.host, self.port))
+			self.socket.connect((self.hostname, self.port))
 			self.socket.recv(self.buffer)	# a hack
 			self.socket.send(self.getLoginText())
 			data = self.getSocketData()
 
 			if "Authentication failed" in data:
-				syslog.syslog(syslog.LOG_WARNING, "Unable to authenticate to ami://" + self.host + ":" + str(self.port))
+				syslog.syslog(syslog.LOG_WARNING, "Unable to authenticate to ami://" + self.hostname + ":" + str(self.port))
 				raise socket.error
 
 			return
@@ -59,7 +59,7 @@ class AsteriskProfile:
 			raise
 
 		except:
-			syslog.syslog(syslog.LOG_WARNING, "Unable to connect to ami://" + self.host + ":" + str(self.port))
+			syslog.syslog(syslog.LOG_WARNING, "Unable to connect to ami://" + self.hostname + ":" + str(self.port))
 			raise
 
 	def getData(self):
@@ -89,7 +89,7 @@ class AsteriskProfile:
 
 			if "Permission denied" in data:
 				returnValue = {}
-				returnValue["error"] = "No permission to run command 'core show channels' on ami://" + self.host + ":" + str(self.port)
+				returnValue["error"] = "No permission to run command 'core show channels' on ami://" + self.hostname + ":" + str(self.port)
 				returnValue["errorcode"] = 1
 				syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 				return returnValue
@@ -134,7 +134,7 @@ class AsteriskProfile:
 
 		except:
 			returnValue = {}
-			returnValue["error"] = "Unable to run command 'core show channels' on ami://" + self.host + ":" + str(self.port)
+			returnValue["error"] = "Unable to run command 'core show channels' on ami://" + self.hostname + ":" + str(self.port)
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
@@ -188,7 +188,7 @@ class AsteriskProfile:
 
 		except:
 			returnValue = {}
-			returnValue["error"] = "Unable to connect to ami://" + self.host + ":" + str(self.port)
+			returnValue["error"] = "Unable to connect to ami://" + self.hostname + ":" + str(self.port)
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
@@ -229,7 +229,7 @@ class AsteriskProfile:
 
 		except:
 			returnValue = {}
-			returnValue["error"] = "Unable to connect to ami://" + self.host + ":" + str(self.port)
+			returnValue["error"] = "Unable to connect to ami://" + self.hostname + ":" + str(self.port)
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
@@ -269,14 +269,14 @@ class AsteriskProfile:
 
 		except socket.timeout:
 			returnValue = {}
-			returnValue["error"] = "Timeout when attempting to connect to ami://" + self.host + ":" + str(self.port)
+			returnValue["error"] = "Timeout when attempting to connect to ami://" + self.hostname + ":" + str(self.port)
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
 		except:
 			returnValue = {}
-			returnValue["error"] = "Unable to connect to ami://" + self.host + ":" + str(self.port)
+			returnValue["error"] = "Unable to connect to ami://" + self.hostname + ":" + str(self.port)
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
@@ -314,14 +314,14 @@ class AsteriskProfile:
 
 		except socket.timeout:
 			returnValue = {}
-			returnValue["error"] = "Timeout when attempting to connect to ami://" + self.host + ":" + str(self.port)
+			returnValue["error"] = "Timeout when attempting to connect to ami://" + self.hostname + ":" + str(self.port)
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
 		except:
 			returnValue = {}
-			returnValue["error"] = "Unable to connect to ami://" + self.host + ":" + str(self.port)
+			returnValue["error"] = "Unable to connect to ami://" + self.hostname + ":" + str(self.port)
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue

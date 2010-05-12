@@ -1,6 +1,6 @@
 import profiles
 
-class MysqlProfileTest:
+class PostgresqlProfileTest:
 
 	def __init__(self, config):
 		self.config = config
@@ -8,7 +8,7 @@ class MysqlProfileTest:
 	def run(self):
 
 		try:
-			profile = profiles.mysql.MysqlProfile(self.config)
+			profile = profiles.postgresql.PostgreSQLProfile(self.config)
 			return profile.getData()
 
 		except:
