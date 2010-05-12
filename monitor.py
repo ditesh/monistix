@@ -47,7 +47,11 @@ class Dispatcher:
 				except ConfigParser.NoSectionError:
 					configValues = []
 
-				self.services[service] = obj(configValues)
+				if configuration.services.get(service, "enabled") == '1':
+					self.services[service] = obj(configValues)
+
+				else:
+					syslog.syslog(syslog.LOG_WARNING, "Not importing module " + service + " as its not enabled")
 
 			except (ImportError, AttributeError):
 				syslog.syslog(syslog.LOG_WARNING, "Unable to correctly import module profiles/" + service + ".py")
