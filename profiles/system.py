@@ -19,6 +19,7 @@ import os
 import sys
 import socket
 import syslog
+import platform
 import subprocess
 
 try:
@@ -114,25 +115,4 @@ class SystemProfile:
 		self.osName = ""
 		self.osVersion = 0
 
-		filenames = [	"/etc/redhat-release",
-				"/etc/SuSE-release"]
-
-		for filename in filenames:
-
-			if os.path.isfile(filename):
-
-				try:
-					fp = open(filename, "r")
-					data = fp.read()
-					fp.close()
-
-				except:
-					raise
-
-				if (data.find("Fedora") >= 0):
-					self.osName = "Fedora"
-					self.osVersion = data[15:16]
-
-				elif (data.find("Red Hat Enterprise Linux") >= 0):
-					self.osName = "Red Hat Enterprise Linux"
-					self.osVersion = data[42:44]
+		(self.osName, self.osVersion, nickname) = platform.linux_distribution()

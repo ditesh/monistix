@@ -9,7 +9,7 @@ class SystemProfileTest:
 
 		try:
 			profile = profiles.system.SystemProfile(self.config)
-			print(profile.getData())
+			return profile.getData()
 
 		except:
 			raise
