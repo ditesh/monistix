@@ -27,7 +27,7 @@ class BasicProfile:
 
 		cpu = {}
 		newcpu = {}
-		mem = {}
+#		mem = {}
 		processes = {}
 		cpuData = psutil.cpu_times()
 
@@ -43,15 +43,15 @@ class BasicProfile:
 			cpu[item] = round(cpu[item], 2)
 			newcpu[item] = round(cpu[item], 2)
 
-		mem["total"] = psutil.TOTAL_PHYMEM
-		mem["available"] = psutil.avail_phymem()
-		mem["used"] = psutil.used_phymem()
-		mem["total_virtmem"] = psutil.total_virtmem()
-		mem["avail_virtmem"] = psutil.avail_virtmem()
-		mem["used_virtmem"] = psutil.used_virtmem()
+#		mem["total"] = psutil.TOTAL_PHYMEM
+#		mem["available"] = psutil.avail_phymem()
+#		mem["used"] = psutil.used_phymem()
+#		mem["total_virtmem"] = psutil.total_virtmem()
+#		mem["avail_virtmem"] = psutil.avail_virtmem()
+#		mem["used_virtmem"] = psutil.used_virtmem()
 
-		for item in mem:
-			mem[item] = round(mem[item], 2)
+#		for item in mem:
+#			mem[item] = round(mem[item], 2)
 
 		try:
 			data = open("/proc/stat", "r").read()
@@ -77,4 +77,27 @@ class BasicProfile:
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
-		return { "cpu": cpu, "memory": mem, "processes": processes }
+		return { "cpu": cpu, "memory": self.getMemData(), "processes": processes }
+
+
+	def getMemData(self):
+
+		returnValue = {}
+
+		try:
+			data = open("/proc/meminfo", "r").read()
+
+		except:
+			returnValue = {}
+			returnValue["error"] = "Unable to read /proc/meminfo"
+			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
+			return returnValue
+
+		lines = data.split("\n")
+
+		for line in lines[:-1]:
+			items = line.split()
+			returnValue[items[0].strip(":")] = items[1].strip()
+
+		return returnValue
