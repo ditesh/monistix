@@ -28,6 +28,7 @@ class BasicProfile:
 		cpu = {}
 		newcpu = {}
 		mem = {}
+		processes = {}
 		cpuData = psutil.cpu_times()
 
 		cpu["user"] = cpuData.user
@@ -52,4 +53,28 @@ class BasicProfile:
 		for item in mem:
 			mem[item] = round(mem[item], 2)
 
-		return { "cpu": cpu, "memory": mem }
+		try:
+			data = open("/proc/stat", "r").read()
+			lines = data.split("\n")
+
+			for line in lines:
+
+				items = line.split()
+
+				if "processes" in line:
+					processes["total"] = items[1].strip()
+
+				elif "procs_running" in line:
+					processes["running"] = items[1].strip()
+
+				elif "procs_blocked" in line:
+					processes["blocked"] = items[1].strip()
+
+		except:
+			returnValue = {}
+			returnValue["error"] = "Unable to read /proc/stat"
+			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
+			return returnValue
+
+		return { "cpu": cpu, "memory": mem, "processes": processes }

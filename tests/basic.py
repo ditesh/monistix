@@ -9,7 +9,7 @@ class BasicProfileTest:
 
 		try:
 			profile = profiles.basic.BasicProfile(self.config)
-			print(profile.getData())
+			return profile.getData()
 
 		except:
 			raise

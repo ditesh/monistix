@@ -34,7 +34,7 @@ class NTPProfile:
 		returnValue = {}
 
 		try:
-			lines = subprocess.Popen([self.ntpqPath, "-c", "hostnames no", "-p"], stdout=subprocess.PIPE).communicate()[0].split("\n")
+			lines = subprocess.Popen([self.ntpqPath, "-p"], stdout=subprocess.PIPE).communicate()[0].split("\n")
 
 		except OSError:
 			raise

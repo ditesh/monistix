@@ -7,7 +7,15 @@ TODO
 3. Add the following plugins:
 
 a) Sendmail
-c) Dovecot
-d) Squid
+b) Courier
+c) Squid
+d)
 
 4. Test "tail" behaviour in postfix profile
+
+5. Add tests which:
+
+a) Test invalid configuration
+b) Test unreachable hosts
+c) Test all expected keys exist
+d) Test values of keys are within correct bounds
