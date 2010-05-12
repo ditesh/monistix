@@ -11,6 +11,7 @@ __version__ = "0.1"
 __email__ = "ditesh@gathani.org"
 
 import syslog
+import subprocess
 
 try:
 	import psutil
@@ -27,8 +28,22 @@ class BasicProfile:
 
 		cpu = {}
 		newcpu = {}
-#		mem = {}
 		processes = {}
+		memory = self.getMemData()
+
+		if "error" in memory:
+			return memory
+
+		filesystemBlocks = self.getFilesystemData(blocks=True)
+
+		if "error" in filesystemBlocks:
+			return filesystemBlocks
+
+		filesystemInodes = self.getFilesystemData(inodes=True)
+
+		if "error" in filesystemInodes:
+			return filesystemInodes
+
 		cpuData = psutil.cpu_times()
 
 		cpu["user"] = cpuData.user
@@ -42,16 +57,6 @@ class BasicProfile:
 		for item in cpu:
 			cpu[item] = round(cpu[item], 2)
 			newcpu[item] = round(cpu[item], 2)
-
-#		mem["total"] = psutil.TOTAL_PHYMEM
-#		mem["available"] = psutil.avail_phymem()
-#		mem["used"] = psutil.used_phymem()
-#		mem["total_virtmem"] = psutil.total_virtmem()
-#		mem["avail_virtmem"] = psutil.avail_virtmem()
-#		mem["used_virtmem"] = psutil.used_virtmem()
-
-#		for item in mem:
-#			mem[item] = round(mem[item], 2)
 
 		try:
 			data = open("/proc/stat", "r").read()
@@ -77,7 +82,7 @@ class BasicProfile:
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
-		return { "cpu": cpu, "memory": self.getMemData(), "processes": processes }
+		return { "cpu": cpu, "memory": memory, "processes": processes, "filesystem_blocks": filesystemBlocks, "filesystem_inodes": filesystemInodes }
 
 
 	def getMemData(self):
@@ -99,5 +104,35 @@ class BasicProfile:
 		for line in lines[:-1]:
 			items = line.split()
 			returnValue[items[0].strip(":")] = items[1].strip()
+
+		return returnValue
+
+	def getFilesystemData(self, blocks=False, inodes=False):
+
+		returnValue = {}
+
+		try:
+			if blocks:
+				lines = subprocess.Popen(["/bin/df", "-aP"], stdout=subprocess.PIPE).communicate()[0].split("\n")
+			else:
+				lines = subprocess.Popen(["/bin/df", "-aPi"], stdout=subprocess.PIPE).communicate()[0].split("\n")
+
+		except OSError:
+			returnValue = {}
+			returnValue["error"] = "Unable to execute /bin/df"
+			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
+			return returnValue
+
+		for line in lines[1:-1]:
+			data = {}
+			items = line.split()
+			data["blocks"] = items[1]
+			data["used"] = items[2]
+			data["available"] = items[3]
+			data["used_percentage"] = items[4]
+			data["mounted_on"] = items[5]
+
+			returnValue[items[0]] = data
 
 		return returnValue
