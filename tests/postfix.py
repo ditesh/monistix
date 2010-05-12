@@ -9,7 +9,7 @@ class PostfixProfileTest:
 
 		try:
 			profile = profiles.postfix.PostfixProfile(self.config)
-			print(profile.getData())
+			return profile.getData()
 
 		except:
 			raise

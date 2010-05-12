@@ -119,7 +119,7 @@ class PostfixProfile:
 		except OSError:
 			raise
 
-		returnValue["totals"] = lines[1:].split()
+		returnValue["total_in_queue"] = lines[1:].split()
 
 		for line in lines[2:]:
 

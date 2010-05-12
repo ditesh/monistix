@@ -38,9 +38,15 @@ def main(argv=None):
 		print >> sys.stderr, "Incorrect or missing configuration for profile " + modulename
 		return 1
 
-	if configuration.services.get(modulename, "enabled") != '1':
-		print >> sys.stderr, "Unable to run test, as module in not enabled in configuration file"
+	try:
+		if configuration.services.get(modulename, "enabled") != '1':
+			print >> sys.stderr, "Unable to run test as module in not enabled in configuration file"
+			return 1
+
+	except ConfigParser.NoOptionError:
+		print >> sys.stderr, "Unable to run test as module in not enabled in configuration file"
 		return 1
+		
 
 	try:
 		tests = __import__("tests")

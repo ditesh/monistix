@@ -46,7 +46,7 @@ class SendmailProfile:
 
 		if os.path.exists(self.mspPath):
 			msp = glob.glob(self.mspPath)
-			returnValue["totals"] += len(msp)
+			returnValue["total_in_queue"] += len(msp)
 
 		try:
 			lines = subprocess.Popen([self.mailstatsPath, "-P"], stdout=subprocess.PIPE).communicate()[0].split("\n")
@@ -70,7 +70,9 @@ class SendmailProfile:
 			if items[0] == "T":
 
 				returnValue["sent"] = items[1]
+				returnValue["traffic_sent"] = items[2]
 				returnValue["received"] = items[3]
+				returnValue["traffic_received"] = items[4]
 				returnValue["rejected"] = items[5]
 				returnValue["discarded"] = items[6]
 				break
