@@ -49,6 +49,11 @@ class BasicProfile:
 		if "error" in netstat:
 			return netstat 
 
+		networkData = self.getNetworkData()
+
+		if "error" in networkData:
+			return networkData
+
 		cpuData = psutil.cpu_times()
 
 		cpu["user"] = cpuData.user
@@ -87,7 +92,7 @@ class BasicProfile:
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
-		return { "cpu": cpu, "memory": memory, "processes": processes, "filesystem_blocks": filesystemBlocks, "filesystem_inodes": filesystemInodes, "netstat": netstat }
+		return { "cpu": cpu, "memory": memory, "processes": processes, "filesystem_blocks": filesystemBlocks, "filesystem_inodes": filesystemInodes, "netstat": netstat, "network_data": networkData }
 
 
 	def getMemData(self):
@@ -180,5 +185,36 @@ class BasicProfile:
 
 			elif "connections established" in line:
 				returnValue["established"] = items[0]
+
+		return returnValue
+
+	def getNetworkData(self):
+
+		returnValue = {}
+
+		try:
+			data = open("/proc/net/dev", "r").read()
+
+		except:
+			returnValue = {}
+			returnValue["error"] = "Unable to read /proc/net/dev"
+			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
+			return returnValue
+
+		lines = data.split("\n")
+
+		for line in lines[2:-1]:
+			items = line.split()
+			returnValue[items[0].strip(":")] = {
+								"bytes_received": items[1],
+								"packets_received": items[2],
+								"errors_received": items[3],
+								"frames_received": items[6],
+								"bytes_sent": items[9],
+								"packets_sent": items[10],
+								"errors_sent": items[11],
+								"frames_sent": items[14]
+							}
 
 		return returnValue
