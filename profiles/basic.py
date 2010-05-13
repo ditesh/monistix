@@ -44,6 +44,11 @@ class BasicProfile:
 		if "error" in filesystemInodes:
 			return filesystemInodes
 
+		netstat= self.getNetstatData()
+
+		if "error" in netstat:
+			return netstat 
+
 		cpuData = psutil.cpu_times()
 
 		cpu["user"] = cpuData.user
@@ -82,7 +87,7 @@ class BasicProfile:
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
-		return { "cpu": cpu, "memory": memory, "processes": processes, "filesystem_blocks": filesystemBlocks, "filesystem_inodes": filesystemInodes }
+		return { "cpu": cpu, "memory": memory, "processes": processes, "filesystem_blocks": filesystemBlocks, "filesystem_inodes": filesystemInodes, "netstat": netstat }
 
 
 	def getMemData(self):
@@ -134,5 +139,46 @@ class BasicProfile:
 			data["mounted_on"] = items[5]
 
 			returnValue[items[0]] = data
+
+		return returnValue
+
+	def getNetstatData(self):
+
+		returnValue = {}
+		returnValue["active"] = 0
+		returnValue["passive"] = 0
+		returnValue["failed"] = 0
+		returnValue["resets"] = 0
+		returnValue["established"] = 0
+
+		try:
+			lines = subprocess.Popen(["/bin/netstat", "-s"], stdout=subprocess.PIPE).communicate()[0].split("\n")
+
+		except OSError:
+			returnValue = {}
+			returnValue["error"] = "Unable to execute /bin/netstat"
+			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
+			return returnValue
+
+
+		for line in lines:
+
+			items = line.split()
+
+			if "active connections openings" in line:
+				returnValue["active"] = items[0]
+
+			elif "passive connection openings" in line:
+				returnValue["passive"] = items[0]
+
+			elif "failed connection attempts" in line:
+				returnValue["failed"] = items[0]
+
+			elif "connection resets" in line:
+				returnValue["resets"] = items[0]
+
+			elif "connections established" in line:
+				returnValue["established"] = items[0]
 
 		return returnValue
