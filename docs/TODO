@@ -6,12 +6,9 @@ TODO
 
 3. Add the following plugins:
 
-a) Network
 b) Courier
 c) Squid
 d) Exim
-
-4. Test "tail" behaviour in postfix profile
 
 5. Add tests which:
 

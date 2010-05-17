@@ -34,7 +34,7 @@ class PostfixProfile:
 			raise IOError
 
 		if not os.path.exists(self.maillogPath):
-			syslog.syslog(syslog.LOG_WARNING, "Unable to find maillog (" + self.qshapePath+")")
+			syslog.syslog(syslog.LOG_WARNING, "Unable to find maillog (" + self.maillogPath+")")
 			raise IOError
 
 		self.maillogTailPosition = 0
@@ -54,10 +54,7 @@ class PostfixProfile:
 				return returnValue
 
 		try:
-			stats = getMailStats()
-			returnValue["volume"] = stats["volume"]
-			returnValue["rejected"] = stats["rejected"]
-			returnValue["delivered"] = stats["delivered"]
+			returnValue = getMailStats()
 
 		except IOError:
 			returnValue = {}
@@ -102,6 +99,8 @@ class PostfixProfile:
 
 				if matches != None:
 					rejected += 1
+
+			fp.close()
 
 		except:
 			raise

@@ -116,7 +116,7 @@ if __name__ == "__main__":
 		fp.close()
 
 	except:
-		syslog.syslog(syslog.LOG_ERR, "Cannot create PID file in " + os.path.join(options.pid, "slashproc") + ", exiting ...")
+		syslog.syslog(syslog.LOG_ERR, "Cannot create PID file in " + pidPath + ", exiting ...")
 		sys.exit(1)
 
 	createDaemon()
