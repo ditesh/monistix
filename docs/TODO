@@ -6,9 +6,10 @@ TODO
 
 3. Add the following plugins:
 
-b) Courier
 c) Squid
 d) Exim
+
+3. Test for Courier
 
 5. Add tests which:
 
