@@ -73,7 +73,7 @@ class SystemPlugin(BasePlugin):
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
-		for line in lines:
+		for line in lines[:-1]:
 
 			try:
 				key = line[0:7]
