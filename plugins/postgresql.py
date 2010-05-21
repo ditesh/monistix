@@ -130,6 +130,14 @@ class PostgreSQLPlugin(BasePlugin):
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
+		elif "could not connect to server" in values[1]:
+			returnValue = {}
+			returnValue["error"] = "Unable to connect to server (is server down or refusing connections?)"
+			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
+			return returnValue
+
+
 		lines = values[0].split("\n")
 
 		for line in lines[:-2]:
