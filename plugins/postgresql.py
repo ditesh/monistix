@@ -1,4 +1,4 @@
-"""PostgreSQL profile provides PostgreSQL server instrumentation data"""
+"""PostgreSQL plugin provides PostgreSQL server instrumentation data"""
 
 __author__ = "Ditesh Shashikant Gathani"
 __copyright__ = "Copyright (C) 2010 Ditesh Shashikant Gathani"
@@ -10,8 +10,9 @@ import os
 import sys
 import syslog
 import subprocess
+from base import *
 
-class PostgreSQLProfile:
+class PostgreSQLPlugin(BasePlugin):
 
 	def __init__(self, config):
 
@@ -22,21 +23,17 @@ class PostgreSQLProfile:
 		self.hostname = "127.0.0.1"
 		self.psqlPath = "/usr/bin/psql"
 
-		for val in config:
+		if "hostname" in config:
+			self.hostname = config["hostname"]
 
-			(key, value) = val
+		if "port" in config:
+			self.port = config["port"]
 
-			if key == "username":
-				self.username = value
+		if "username" in config:
+			self.username = config["username"]
 
-			if key == "password":
-				self.password = value
-
-			if key == "port":
-				self.port = value
-
-			if key == "host":
-				self.host = value
+		if "password" in config:
+			self.password = config["password"]
 
 		if not os.path.exists(self.psqlPath):
 			raise IOError

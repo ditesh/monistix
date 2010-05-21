@@ -1,4 +1,4 @@
-"""Sendmail profile provides data on Sendmail mail queues"""
+"""Sendmail plugin provides data on Sendmail mail queues"""
 
 __author__ = "Ditesh Shashikant Gathani"
 __copyright__ = "Copyright (C) 2010 Ditesh Shashikant Gathani"
@@ -7,11 +7,12 @@ __version__ = "0.1"
 __email__ = "ditesh@gathani.org"
 
 import os
-import syslog
 import glob
+import syslog
 import subprocess
+from base import *
 
-class SendmailProfile:
+class SendmailPlugin(BasePlugin):
 
 	def __init__(self, config):
 
@@ -20,18 +21,14 @@ class SendmailProfile:
 		self.mspPath = "/var/spool/mqueue-client"
 		self.mailstatsPath = "/usr/sbin/mailstats"
 
-		for val in config:
+		if "mta_path" in config:
+			self.mtaPath = config["mta_path"]
 
-			(key, value) = val
+		if "msp_path" in config:
+			self.mspPath = config["mta_path"]
 
-			if key == "mta_path":
-				self.mtaPath= value
-
-			if key == "msp_path":
-				self.mspPath= value
-
-			if key == "mailstats_path":
-				self.mailstatsPath= value
+		if "mailstats_path" in config:
+			self.mailstatsPath = config["mailstats_path"]
 
 		if not os.path.exists(self.mtaPath):
 			syslog.syslog(syslog.LOG_WARNING, "Unable to find MTA path (" + self.mtaPath+")")

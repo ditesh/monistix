@@ -1,6 +1,6 @@
-import profiles
+import plugins
 
-class BasicProfileTest:
+class BasicPluginTest:
 
 	def __init__(self, config):
 		self.config = config
@@ -8,8 +8,8 @@ class BasicProfileTest:
 	def run(self):
 
 		try:
-			profile = profiles.basic.BasicProfile(self.config)
-			return profile.getData()
+			plugin = plugins.basic.BasicPlugin(self.config)
+			return plugin.getData()
 
 		except:
 			raise

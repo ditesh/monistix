@@ -1,6 +1,6 @@
-import profiles
+import plugins
 
-class MysqlProfileTest:
+class MysqlPluginTest:
 
 	def __init__(self, config):
 		self.config = config
@@ -8,8 +8,8 @@ class MysqlProfileTest:
 	def run(self):
 
 		try:
-			profile = profiles.mysql.MysqlProfile(self.config)
-			return profile.getData()
+			plugin = plugins.mysql.MysqlPlugin(self.config)
+			return plugin.getData()
 
 		except:
 			raise

@@ -1,6 +1,6 @@
-import profiles
+import plugins
 
-class ApacheProfileTest:
+class ApachePluginTest:
 
 	def __init__(self, config):
 		self.config = config
@@ -8,8 +8,8 @@ class ApacheProfileTest:
 	def run(self):
 
 		try:
-			profile = profiles.apache.ApacheProfile(self.config)
-			print(profile.getData())
+			plugin = plugins.apache.ApachePlugin(self.config)
+			return plugin.getData()
 
 		except:
 			raise

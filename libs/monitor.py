@@ -14,9 +14,9 @@ import config
 import syslog
 import hashlib
 import httplib
-import profiles
+import plugins 
 import traceback
-import ConfigParser
+from configobj import ConfigObj
 
 """Module loader and dispatcher"""
 class Dispatcher:
@@ -35,23 +35,47 @@ class Dispatcher:
 
 		self.ms = Store(self.configuration.key, self.configuration.server, self.configuration.cache)
 
-		for service in self.configuration.services.sections():
+		for host, services in self.configuration.services:
 
 			try:
-				module = getattr(profiles, service)
-				obj = getattr(module, service.capitalize() + "Profile")
 
-				try:
-					configValues = self.configuration.services.items(service)
+				if host == "all":
 
-				except ConfigParser.NoSectionError:
-					configValues = []
-
-				if configuration.services.get(service, "enabled") == '1':
-					self.services[service] = obj(configValues)
+					if configuration.services[host]["enabled"] != "1":
+						syslog.syslog(syslog.LOG_WARNING, "Modules not enabled on global level, will not continue")
+						raise
 
 				else:
-					syslog.syslog(syslog.LOG_WARNING, "Not importing module " + service + " as its not enabled")
+
+					if "hostname" in services:
+						hostname = configuration.services[host]["hostname"]
+						del services["hostname"]
+
+					else:
+						syslog.syslog(syslog.LOG_WARNING, "Not importing plugins for host " + host + " as hostname is not specified")
+						continue
+
+					if "enabled" not in services or services["enabled"] != "1":
+						syslog.syslog(syslog.LOG_WARNING, "Not importing plugins for host " + host + " as host is not enabled")
+						continue
+
+					del services["enabled"]
+
+					for plugin, configValues in services:
+
+						if "enabled" not in configValue or configValues["enabled"] != "1":
+							syslog.syslog(syslog.LOG_WARNING, "Not importing plugin for host " + host + " as its not enabled")
+							continue
+
+						if "plugin" not in configValues:
+							syslog.syslog(syslog.LOG_WARNING, "Not importing plugin for host " + host + " as its not specified")
+							continue
+
+						module = getattr(profiles, configValues["plugin"])
+						obj = getattr(module, configValues["plugin"].capitalize() + "Plugin")
+
+						self.services[host][plugin] = obj()
+
 
 			except (ImportError, AttributeError):
 				syslog.syslog(syslog.LOG_WARNING, "Unable to correctly import module profiles/" + service + ".py")
@@ -62,11 +86,12 @@ class Dispatcher:
 
 	def dispatch(self):
 
-		for service in self.services:
-			startTimestamp = time.time()
-			data = self.services[service].getData()
-			timeTaken = time.time() - startTimestamp
-			self.ms.store(service, data, timeTaken)
+		for hostname, plugins in self.services:
+			for plugin in plugins:
+				startTimestamp = time.time()
+				data = plugin.getData()
+				timeTaken = time.time() - startTimestamp
+				self.ms.store(hostname, plugin.getName(), data, timeTaken)
 
 
 	def sync(self):

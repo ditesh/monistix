@@ -1,4 +1,4 @@
-"""Basic profile provides OS specific data:
+"""Basic plugin provides OS specific data:
 
 * CPU use
 * Memory use
@@ -12,6 +12,7 @@ __email__ = "ditesh@gathani.org"
 
 import syslog
 import subprocess
+from base import *
 
 try:
 	import psutil
@@ -19,7 +20,7 @@ try:
 except ImportError:
 	raise
 
-class BasicProfile:
+class BasicPlugin(BasePlugin):
 
 	def __init__(self, config):
 		self.config = config

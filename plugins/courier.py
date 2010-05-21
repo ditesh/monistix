@@ -9,8 +9,9 @@ __email__ = "ditesh@gathani.org"
 import os
 import glob
 import syslog
+from base import *
 
-class CourierPlugin:
+class CourierPlugin(BasePlugin):
 
 	def __init__(self, config):
 

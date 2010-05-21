@@ -10,7 +10,7 @@ import os
 import glob
 import syslog
 
-class SquidPlugin:
+class SquidPlugin(BasePlugin):
 
 	def __init__(self, config):
 

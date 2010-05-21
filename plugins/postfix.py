@@ -1,4 +1,4 @@
-"""Postfix profile provides data on mail queues"""
+"""Postfix plugin provides data on mail queues"""
 
 __author__ = "Ditesh Shashikant Gathani"
 __copyright__ = "Copyright (C) 2010 Ditesh Shashikant Gathani"
@@ -10,8 +10,9 @@ import os
 import re
 import syslog
 import subprocess
+from base import *
 
-class PostfixProfile:
+class PostfixPlugin(BasePlugin):
 
 	def __init__(self, config):
 
@@ -19,15 +20,11 @@ class PostfixProfile:
 		self.qshapePath = "/usr/sbin/qshape"
 		self.maillogPath = "/var/log/maillog"
 
-		for val in config:
+		if "qshape_path" in config:
+			self.qshapePath = config["qshape_path"]
 
-			(key, value) = val
-
-			if key == "qshape_path":
-				self.qshapePath = value
-
-			if key == "maillog_path":
-				self.maillogPath = value
+		if "maillog_path" in config:
+			self.maillogPath = config["maillog_path"]
 
 		if not os.path.exists(self.qshapePath):
 			syslog.syslog(syslog.LOG_WARNING, "Unable to find qshape (" + self.qshapePath+")")

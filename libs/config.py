@@ -8,15 +8,13 @@ __email__ = "ditesh@gathani.org"
 
 import os
 import httplib
-import ConfigParser
+from configobj import ConfigObj
 
 # Why two config objects? Have to fix
-clientConfig = ConfigParser.ConfigParser()
-servicesConfig = ConfigParser.ConfigParser()
 
 class MonitorConf:
 
-	def __init__(self, filePath = "/etc/monitor"):
+	def __init__(self, filePath = "/etc/monistix"):
 
 		self.filePath = filePath
 
@@ -37,25 +35,25 @@ class MonitorConf:
 	def readClientConfig(self):
 
 		try:
-			clientConfig.readfp(open(os.path.join(self.filePath, "client.conf")))
+			clientConfig = ConfigObj(os.path.join(self.filePath, "client.conf"))
 
 		except IOError:
 			raise
 
 		try:
-			self.key = clientConfig.get("client", "key")
+			self.key = clientConfig["client"]["key"]
 
 		except ConfigParser.NoOptionError:
 			self.key = ""
 			
 		try:
-			self.server = clientConfig.get("client", "server")
+			self.server = clientConfig["client"]["server"]
 
 		except ConfigParser.NoOptionError:
 			self.server = ""
 		
 		try:
-			self.cache = clientConfig.get("client", "cache")
+			self.cache = clientConfig["client"]["cache"]
 
 		except ConfigParser.NoOptionError:
 			self.cache = ""
@@ -64,7 +62,7 @@ class MonitorConf:
 	def readServicesConfig(self):
 
 		try:
-			servicesConfig.readfp(open(os.path.join(self.filePath, "services.conf")))
+			servicesConfig = ConfigObj(os.path.join(self.filePath, "services.conf"))
 
 		except IOError:
 			raise

@@ -1,6 +1,6 @@
-import profiles
+import plugins
 
-class PostfixProfileTest:
+class PostfixPluginTest:
 
 	def __init__(self, config):
 		self.config = config
@@ -8,8 +8,8 @@ class PostfixProfileTest:
 	def run(self):
 
 		try:
-			profile = profiles.postfix.PostfixProfile(self.config)
-			return profile.getData()
+			plugin = plugins.postfix.PostfixPlugin(self.config)
+			return plugin.getData()
 
 		except:
 			raise

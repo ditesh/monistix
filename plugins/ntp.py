@@ -1,4 +1,4 @@
-"""NTP profile provides data on NTP peers"""
+"""NTP plugin provides data on NTP peers"""
 
 __author__ = "Ditesh Shashikant Gathani"
 __copyright__ = "Copyright (C) 2010 Ditesh Shashikant Gathani"
@@ -10,20 +10,17 @@ import os
 import socket
 import syslog
 import subprocess
+from base import *
 
-class NTPProfile:
+class NTPPlugin(BasePlugin):
 
 	def __init__(self, config):
 
 		self.config = config
 		self.ntpqPath = "/usr/sbin/ntpq"
 
-		for val in config:
-
-			(key, value) = val
-
-			if key == "ntpq_path":
-				self.ntpqPath = value
+		if "ntpq_path" in config:
+			self.ntpqPath = config["ntpq_path"]
 
 		if not os.path.exists(self.ntpqPath):
 			syslog.syslog(syslog.LOG_WARNING, "Unable to find ntpq (" + self.ntpqPath +")")

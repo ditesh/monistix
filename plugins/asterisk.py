@@ -1,4 +1,4 @@
-"""Asterisk profile provides Asterisk specific instrumentation data"""
+"""Asterisk plugin provides Asterisk specific instrumentation data"""
 
 __author__ = "Ditesh Shashikant Gathani"
 __copyright__ = "Copyright (C) 2010 Ditesh Shashikant Gathani"
@@ -9,9 +9,10 @@ __email__ = "ditesh@gathani.org"
 import socket 
 import syslog
 import httplib
+from base import *
 from libs.exceptions import *
 
-class AsteriskProfile:
+class AsteriskPlugin(BasePlugin):
 
 	def __init__(self, config):
 
@@ -22,21 +23,17 @@ class AsteriskProfile:
 		self.password = None
 		self.hostname = "localhost"
 
-		for val in config:
+		if "hostname" in config:
+			self.hostname = config["hostname"]
 
-			(key, value) = val
+		if "port" in config:
+			self.port = config["port"]
 
-			if key == "hostname":
-				self.hostname = value
+		if "username" in config:
+			self.username = config["username"]
 
-			if key == "port":
-				self.port = value
-
-			if key == "username":
-				self.username = value
-
-			if key == "password":
-				self.password = value
+		if "password" in config:
+			self.password = config["password"]
 
 		if self.username == None or self.password == None:
 			syslog.syslog(syslog.LOG_WARNING, "Invalid configuration")

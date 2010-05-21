@@ -1,6 +1,6 @@
-import profiles
+import plugins
 
-class SystemProfileTest:
+class SystemPluginTest:
 
 	def __init__(self, config):
 		self.config = config
@@ -8,8 +8,8 @@ class SystemProfileTest:
 	def run(self):
 
 		try:
-			profile = profiles.system.SystemProfile(self.config)
-			return profile.getData()
+			plugin = plugins.system.SystemPlugin(self.config)
+			return plugin.getData()
 
 		except:
 			raise

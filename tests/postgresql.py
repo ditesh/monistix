@@ -1,6 +1,6 @@
-import profiles
+import plugins
 
-class PostgresqlProfileTest:
+class PostgresqlPluginTest:
 
 	def __init__(self, config):
 		self.config = config
@@ -8,8 +8,8 @@ class PostgresqlProfileTest:
 	def run(self):
 
 		try:
-			profile = profiles.postgresql.PostgreSQLProfile(self.config)
-			return profile.getData()
+			plugin = plugins.postgresql.PostgreSQLPlugin(self.config)
+			return plugin.getData()
 
 		except:
 			raise

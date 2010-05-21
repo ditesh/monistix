@@ -1,4 +1,4 @@
-"""MySQL profile provides MySQL server instrumentation data"""
+"""MySQL plugin provides MySQL server instrumentation data"""
 
 __author__ = "Ditesh Shashikant Gathani"
 __copyright__ = "Copyright (C) 2010 Ditesh Shashikant Gathani"
@@ -9,8 +9,9 @@ __email__ = "ditesh@gathani.org"
 import os
 import syslog
 import subprocess
+from base import *
 
-class MysqlProfile:
+class MysqlPlugin(BasePlugin):
 
 	def __init__(self, config):
 

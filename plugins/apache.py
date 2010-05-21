@@ -1,4 +1,4 @@
-"""Apache HTTPD profile provides HTTP server instrumentation data"""
+"""Apache HTTPD plugin provides HTTP server instrumentation data"""
 
 __author__ = "Ditesh Shashikant Gathani"
 __copyright__ = "Copyright (C) 2010 Ditesh Shashikant Gathani"
@@ -8,8 +8,9 @@ __email__ = "ditesh@gathani.org"
 
 import syslog
 import httplib
+from base import *
 
-class ApacheProfile:
+class ApachePlugin(BasePlugin):
 
 	def __init__(self, config):
 

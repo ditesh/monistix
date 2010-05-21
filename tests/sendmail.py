@@ -1,6 +1,6 @@
-import profiles
+import plugins
 
-class SendmailProfileTest:
+class SendmailPluginTest:
 
 	def __init__(self, config):
 		self.config = config
@@ -8,8 +8,8 @@ class SendmailProfileTest:
 	def run(self):
 
 		try:
-			profile = profiles.sendmail.SendmailProfile(self.config)
-			return profile.getData()
+			plugin = plugins.sendmail.SendmailPlugin(self.config)
+			return plugin.getData()
 
 		except:
 			raise

@@ -1,7 +1,7 @@
 import sys
-import profiles
+import plugins
 
-class NtpProfileTest:
+class NtpPluginTest:
 
 	def __init__(self, config):
 		self.config = config
@@ -9,8 +9,8 @@ class NtpProfileTest:
 	def run(self):
 
 		try:
-			profile = profiles.ntp.NTPProfile(self.config)
-			return profile.getData()
+			plugin = plugins.ntp.NTPPlugin(self.config)
+			return plugin.getData()
 
 		except:
 			raise

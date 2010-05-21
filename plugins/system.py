@@ -1,4 +1,4 @@
-"""System profile provides system level data:
+"""System plugin provides system level data:
 
 * Hardware installed
 	- CPU
@@ -21,6 +21,7 @@ import socket
 import syslog
 import platform
 import subprocess
+from base import *
 
 try:
 	import psutil
@@ -28,7 +29,7 @@ try:
 except ImportError:
 	raise
 
-class SystemProfile:
+class SystemPlugin(BasePlugin):
 
 	def __init__(self, config):
 		self.config = config

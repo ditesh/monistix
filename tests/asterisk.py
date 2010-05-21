@@ -1,8 +1,8 @@
 import sys
-import profiles
+import plugins
 from libs.exceptions import *
 
-class AsteriskProfileTest:
+class AsteriskPluginTest:
 
 	def __init__(self, config):
 		self.config = config
@@ -10,8 +10,8 @@ class AsteriskProfileTest:
 	def run(self):
 
 		try:
-			profile = profiles.asterisk.AsteriskProfile(self.config)
-			return profile.getData()
+			plugin = plugins.asterisk.AsteriskPlugin(self.config)
+			return plugin.getData()
 
 		except InvalidConfiguration as e:
 			print >> sys.stderr, e
