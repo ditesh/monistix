@@ -16,38 +16,29 @@ class AsteriskPlugin(BasePlugin):
 
 	def __init__(self, config):
 
-		self.port = 5038
 		self.buffer = 4096
 		self.config = config
-		self.username = None
-		self.password = None
-		self.hostname = "localhost"
 
-		if "hostname" in config:
-			self.hostname = config["hostname"]
+		self["port"] = 5038
+		self["username"] = None
+		self["password"] = None
+		self["hostname"] = "localhost"
 
-		if "port" in config:
-			self.port = config["port"]
+		self.configure(["hostname", "port", "username", "password"])
 
-		if "username" in config:
-			self.username = config["username"]
-
-		if "password" in config:
-			self.password = config["password"]
-
-		if self.username == None or self.password == None:
+		if self["username"] == None or self["password"] == None:
 			syslog.syslog(syslog.LOG_WARNING, "Invalid configuration")
 			raise InvalidConfiguration("Asterisk username and/or password not specified")
 
 		try:
 			self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-			self.socket.connect((self.hostname, self.port))
+			self.socket.connect((self["hostname"], self["port"]))
 			self.socket.recv(self.buffer)	# a hack
 			self.socket.send(self.getLoginText())
 			data = self.getSocketData()
 
 			if "Authentication failed" in data:
-				syslog.syslog(syslog.LOG_WARNING, "Unable to authenticate to ami://" + self.hostname + ":" + str(self.port))
+				syslog.syslog(syslog.LOG_WARNING, "Unable to authenticate to ami://" + self["hostname"] + ":" + str(self["port"]))
 				raise socket.error
 
 			return
@@ -56,7 +47,7 @@ class AsteriskPlugin(BasePlugin):
 			raise
 
 		except:
-			syslog.syslog(syslog.LOG_WARNING, "Unable to connect to ami://" + self.hostname + ":" + str(self.port))
+			syslog.syslog(syslog.LOG_WARNING, "Unable to connect to ami://" + self["hostname"] + ":" + str(self["port"]))
 			raise
 
 	def getData(self):
@@ -86,7 +77,7 @@ class AsteriskPlugin(BasePlugin):
 
 			if "Permission denied" in data:
 				returnValue = {}
-				returnValue["error"] = "No permission to run command 'core show channels' on ami://" + self.hostname + ":" + str(self.port)
+				returnValue["error"] = "No permission to run command 'core show channels' on ami://" + self["hostname"] + ":" + str(self["port"])
 				returnValue["errorcode"] = 1
 				syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 				return returnValue
@@ -131,7 +122,7 @@ class AsteriskPlugin(BasePlugin):
 
 		except:
 			returnValue = {}
-			returnValue["error"] = "Unable to run command 'core show channels' on ami://" + self.hostname + ":" + str(self.port)
+			returnValue["error"] = "Unable to run command 'core show channels' on ami://" + self["hostname"] + ":" + str(self["port"])
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
@@ -185,7 +176,7 @@ class AsteriskPlugin(BasePlugin):
 
 		except:
 			returnValue = {}
-			returnValue["error"] = "Unable to connect to ami://" + self.hostname + ":" + str(self.port)
+			returnValue["error"] = "Unable to connect to ami://" + self["hostname"] + ":" + str(self["port"])
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
@@ -226,7 +217,7 @@ class AsteriskPlugin(BasePlugin):
 
 		except:
 			returnValue = {}
-			returnValue["error"] = "Unable to connect to ami://" + self.hostname + ":" + str(self.port)
+			returnValue["error"] = "Unable to connect to ami://" + self["hostname"] + ":" + str(self["port"])
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
@@ -266,14 +257,14 @@ class AsteriskPlugin(BasePlugin):
 
 		except socket.timeout:
 			returnValue = {}
-			returnValue["error"] = "Timeout when attempting to connect to ami://" + self.hostname + ":" + str(self.port)
+			returnValue["error"] = "Timeout when attempting to connect to ami://" + self["hostname"] + ":" + str(self["port"])
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
 		except:
 			returnValue = {}
-			returnValue["error"] = "Unable to connect to ami://" + self.hostname + ":" + str(self.port)
+			returnValue["error"] = "Unable to connect to ami://" + self["hostname"] + ":" + str(self["port"])
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
@@ -311,14 +302,14 @@ class AsteriskPlugin(BasePlugin):
 
 		except socket.timeout:
 			returnValue = {}
-			returnValue["error"] = "Timeout when attempting to connect to ami://" + self.hostname + ":" + str(self.port)
+			returnValue["error"] = "Timeout when attempting to connect to ami://" + self["hostname"] + ":" + str(self["port"])
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
 		except:
 			returnValue = {}
-			returnValue["error"] = "Unable to connect to ami://" + self.hostname + ":" + str(self.port)
+			returnValue["error"] = "Unable to connect to ami://" + self["hostname"] + ":" + str(self["port"])
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
@@ -328,8 +319,8 @@ class AsteriskPlugin(BasePlugin):
 	def getLoginText(self):
 
 		returnValue = ['Action: login']
-		returnValue.append('Username: '+self.username);
-		returnValue.append('Secret: '+self.password);
+		returnValue.append('Username: '+self["username"]);
+		returnValue.append('Secret: '+self["password"]);
 		returnValue.append('Events: off')
 		returnValue.append('')
 		returnValue.append('')

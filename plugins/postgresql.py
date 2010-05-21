@@ -16,26 +16,17 @@ class PostgreSQLPlugin(BasePlugin):
 
 	def __init__(self, config):
 
-		self.port = None
 		self.config = config
-		self.username = None
-		self.password = None
-		self.hostname = "127.0.0.1"
-		self.psqlPath = "/usr/bin/psql"
 
-		if "hostname" in config:
-			self.hostname = config["hostname"]
+		self["port"] = None
+		self["username"] = None
+		self["password"] = None
+		self["hostname"] = "127.0.0.1"
+		self["psqlPath"] = "/usr/bin/psql"
 
-		if "port" in config:
-			self.port = config["port"]
+		self.configure(["hostname", "port", "username", "password", "psql_path"])
 
-		if "username" in config:
-			self.username = config["username"]
-
-		if "password" in config:
-			self.password = config["password"]
-
-		if not os.path.exists(self.psqlPath):
+		if not os.path.exists(self["psqlPath"]):
 			raise IOError
 
 	def getData(self):
@@ -43,20 +34,20 @@ class PostgreSQLPlugin(BasePlugin):
 		data = {}
 		returnValue = {}
 
-		args = [self.psqlPath]
+		args = [self["psqlPath"]]
 		args.append("-h")
-		args.append(self.hostname)
+		args.append(self["hostname"])
 
-		if self.username != None:
+		if self["username"] != None:
 			args.append("-U")
-			args.append(self.username)
+			args.append(self["username"])
 
-		if self.password != None:
+		if self["password"] != None:
 			args.append("-P" + self.password)
 
-		if self.port != None:
+		if self["port"] != None:
 			args.append("-p")
-			args.append(self.port)
+			args.append(self["port"])
 
 		args.append("-d")
 		args.append("template1")
@@ -111,7 +102,6 @@ class PostgreSQLPlugin(BasePlugin):
 		if "error" in transactions:
 			return transactions
 
-
 		returnValue["users "] = users
 		returnValue["locks"] = locks
 		returnValue["cache"] = cache
@@ -135,7 +125,7 @@ class PostgreSQLPlugin(BasePlugin):
 
 		if "failed" in values[1]:
 			returnValue = {}
-			returnValue["error"] = "Unable to execute " + self.psqlPath + " (possibly unable to authenticate)"
+			returnValue["error"] = "Unable to execute " + self["psqlPath"] + " (possibly unable to authenticate)"
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue

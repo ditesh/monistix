@@ -14,34 +14,22 @@ class ApachePlugin(BasePlugin):
 
 	def __init__(self, config):
 
-		self.host = "localhost"
-		self.port = 80
 		self.config = config
-		self.username = None
-		self.password = None
 
-		for val in config:
+		self["port"] = 80
+		self["username"] = None
+		self["password"] = None
+		self["hostname"] = "127.0.0.1"
 
-			(key, value) = val
+		self.configure(["hostname", "port", "username", "password"])
 
-			if key == "host":
-				self.host = value
-
-			if key == "port":
-				self.port = value
-
-			if key == "username":
-				self.username = value
-
-			if key == "password":
-				self.password = value
 
 	def getData(self):
 
 		returnValue = {}
 
 		try:
-			conn = httplib.HTTPConnection(self.host + ":" + str(self.port))
+			conn = httplib.HTTPConnection(self["hostname"] + ":" + str(self["port"]))
 			conn.request("GET", "/server-status?auto")
 			resp = conn.getresponse()
 
@@ -59,7 +47,7 @@ class ApachePlugin(BasePlugin):
 
 		except:
 			returnValue = {}
-			returnValue["error"] = "Unable to connect to http://" + self.host + ":" + str(self.port) + "/server-status?auto"
+			returnValue["error"] = "Unable to connect to http://" + self["hostname"] + ":" + str(self["port"]) + "/server-status?auto"
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue

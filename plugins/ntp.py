@@ -17,13 +17,12 @@ class NTPPlugin(BasePlugin):
 	def __init__(self, config):
 
 		self.config = config
-		self.ntpqPath = "/usr/sbin/ntpq"
+		self["ntpqPath"] = "/usr/sbin/ntpq"
 
-		if "ntpq_path" in config:
-			self.ntpqPath = config["ntpq_path"]
+		self.configure(["ntpq_path"])
 
-		if not os.path.exists(self.ntpqPath):
-			syslog.syslog(syslog.LOG_WARNING, "Unable to find ntpq (" + self.ntpqPath +")")
+		if not os.path.exists(self["ntpqPath"]):
+			syslog.syslog(syslog.LOG_WARNING, "Unable to find ntpq (" + self["ntpqPath"] +")")
 			raise IOError
 
 	def getData(self):
@@ -31,7 +30,7 @@ class NTPPlugin(BasePlugin):
 		returnValue = {}
 
 		try:
-			lines = subprocess.Popen([self.ntpqPath, "-p"], stdout=subprocess.PIPE).communicate()[0].split("\n")
+			lines = subprocess.Popen([self["ntpqPath"], "-p"], stdout=subprocess.PIPE).communicate()[0].split("\n")
 
 		except OSError:
 			raise

@@ -15,28 +15,15 @@ class MysqlPlugin(BasePlugin):
 
 	def __init__(self, config):
 
-		self.port = None
 		self.config = config
-		self.username = None
-		self.password = None
-		self.hostname = "127.0.0.1"
-		self.mysqladminPath = "/usr/bin/mysqladmin"
 
-		for val in config:
+		self["port"] = 3306
+		self["username"] = None
+		self["password"] = None
+		self["hostname"] = "127.0.0.1"
+		self["mysqladminPath"] = "/usr/bin/mysqladmin"
 
-			(key, value) = val
-
-			if key == "username":
-				self.username = value
-
-			if key == "password":
-				self.password = value
-
-			if key == "port":
-				self.port = value
-
-			if key == "hostname":
-				self.hostname = value
+		self.configure(["hostname", "port", "username", "password", "mysqladmin_path"])
 
 		if not os.path.exists(self.mysqladminPath):
 			raise IOError
@@ -47,18 +34,17 @@ class MysqlPlugin(BasePlugin):
 
 		args = [self.mysqladminPath]
 		args.append("-h")
-		args.append(self.hostname)
+		args.append(self["hostname"])
 
-		if self.username != None:
+		if self["username"] != None:
 			args.append("-u")
-			args.append(self.username)
+			args.append(self["username"])
 
-		if self.password != None:
-			args.append("-p" + self.password)
+		if self["password"] != None:
+			args.append("-p" + self["password"])
 
-		if self.port != None:
-			args.append("-P")
-			args.append(self.port)
+		args.append("-P")
+		args.append(self["port"])
 
 		args.append("extended")
 		args.append("status")
@@ -86,6 +72,5 @@ class MysqlPlugin(BasePlugin):
 
 			line = line.split("|")
 			returnValue[line[1].strip().lower()] = line[2].strip()
-			print line[1].lower()
 
 		return returnValue

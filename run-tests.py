@@ -50,6 +50,9 @@ def main(argv=None):
 	except:
 		raise
 
+	successes = 0
+	failures = 0
+
 	if plugin == "config":
 		classname = "ConfigTest"
 
@@ -57,8 +60,6 @@ def main(argv=None):
 
 		import plugins
 
-		successes = 0
-		failures = 0
 		pluginList = dir(plugins)
 
 		for plugin in pluginList:

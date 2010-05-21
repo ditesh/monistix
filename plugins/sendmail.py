@@ -17,36 +17,30 @@ class SendmailPlugin(BasePlugin):
 	def __init__(self, config):
 
 		self.config = config
-		self.mtaPath = "/var/spool/mqueue"
-		self.mspPath = "/var/spool/mqueue-client"
-		self.mailstatsPath = "/usr/sbin/mailstats"
 
-		if "mta_path" in config:
-			self.mtaPath = config["mta_path"]
+		self["mtaPath"] = "/var/spool/mqueue"
+		self["mspPath"] = "/var/spool/mqueue-client"
+		self["mailstatsPath"] = "/usr/sbin/mailstats"
 
-		if "msp_path" in config:
-			self.mspPath = config["mta_path"]
+		self.configure(["mta_path", "msp_path", "mailstats_path"])
 
-		if "mailstats_path" in config:
-			self.mailstatsPath = config["mailstats_path"]
-
-		if not os.path.exists(self.mtaPath):
-			syslog.syslog(syslog.LOG_WARNING, "Unable to find MTA path (" + self.mtaPath+")")
+		if not os.path.exists(self["mtaPath"]):
+			syslog.syslog(syslog.LOG_WARNING, "Unable to find MTA path (" + self["mtaPath"] + ")")
 			raise IOError
 
 	def getData(self):
 
 		returnValue = {}
 
-		mta = glob.glob(self.mtaPath)
+		mta = glob.glob(self["mtaPath"])
 		returnValue["totals"] = len(mta)
 
-		if os.path.exists(self.mspPath):
-			msp = glob.glob(self.mspPath)
+		if os.path.exists(self["mspPath"]):
+			msp = glob.glob(self["mspPath"])
 			returnValue["total_in_queue"] += len(msp)
 
 		try:
-			lines = subprocess.Popen([self.mailstatsPath, "-P"], stdout=subprocess.PIPE).communicate()[0].split("\n")
+			lines = subprocess.Popen([self["mailstatsPath"], "-P"], stdout=subprocess.PIPE).communicate()[0].split("\n")
 
 		except OSError:
 			raise
@@ -57,8 +51,6 @@ class SendmailPlugin(BasePlugin):
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
-
-
 
 		for line in lines:
 
@@ -73,8 +65,5 @@ class SendmailPlugin(BasePlugin):
 				returnValue["rejected"] = items[5]
 				returnValue["discarded"] = items[6]
 				break
-
-		return returnValue
-
 
 		return returnValue

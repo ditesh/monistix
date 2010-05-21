@@ -17,21 +17,17 @@ class PostfixPlugin(BasePlugin):
 	def __init__(self, config):
 
 		self.config = config
-		self.qshapePath = "/usr/sbin/qshape"
-		self.maillogPath = "/var/log/maillog"
+		self["qshapePath"] = "/usr/sbin/qshape"
+		self["maillogPath"] = "/var/log/maillog"
 
-		if "qshape_path" in config:
-			self.qshapePath = config["qshape_path"]
-
-		if "maillog_path" in config:
-			self.maillogPath = config["maillog_path"]
+		self.configure(["qshape_path", "maillog_path"])
 
 		if not os.path.exists(self.qshapePath):
-			syslog.syslog(syslog.LOG_WARNING, "Unable to find qshape (" + self.qshapePath+")")
+			syslog.syslog(syslog.LOG_WARNING, "Unable to find qshape (" + self["qshapePath"] + ")")
 			raise IOError
 
 		if not os.path.exists(self.maillogPath):
-			syslog.syslog(syslog.LOG_WARNING, "Unable to find maillog (" + self.maillogPath+")")
+			syslog.syslog(syslog.LOG_WARNING, "Unable to find maillog (" + self["maillogPath"] + ")")
 			raise IOError
 
 		self.maillogTailPosition = 0
@@ -46,7 +42,7 @@ class PostfixPlugin(BasePlugin):
 
 			except OSError:
 				returnValue = {}
-				returnValue["error"] = "Unable to execute " + self.qshapePath
+				returnValue["error"] = "Unable to execute " + self["qshapePath"]
 				returnValue["errorcode"] = 1
 				return returnValue
 
@@ -55,7 +51,7 @@ class PostfixPlugin(BasePlugin):
 
 		except IOError:
 			returnValue = {}
-			returnValue["error"] = "Unable to read " + self.maillogPath
+			returnValue["error"] = "Unable to read " + self["maillogPath"]
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
@@ -70,7 +66,7 @@ class PostfixPlugin(BasePlugin):
 		delivered = 0
 
 		try:
-			filesize = os.path.getsize(self.maillogPath)
+			filesize = os.path.getsize(self["maillogPath"])
 
 			if (filesize < self.maillogTailPosition):
 				self.maillogTailPosition = 0
@@ -110,7 +106,7 @@ class PostfixPlugin(BasePlugin):
 		returnValue = {}
 
 		try:
-			lines = subprocess.Popen([self.qshapePath, queue], stdout=subprocess.PIPE).communicate()[0].split("\n")
+			lines = subprocess.Popen([self["qshapePath"], queue], stdout=subprocess.PIPE).communicate()[0].split("\n")
 
 		except OSError:
 			raise
