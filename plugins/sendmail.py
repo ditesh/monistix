@@ -40,7 +40,7 @@ class SendmailPlugin(BasePlugin):
 			returnValue["total_in_queue"] += len(msp)
 
 		try:
-			lines = subprocess.Popen([self["mailstatsPath"], "-P"], stdout=subprocess.PIPE).communicate()[0].split("\n")
+			lines = subprocess.Popen([self["mailstatsPath"], "-P"], stderr=subprocess.PIPE, stdout=subprocess.PIPE).communicate()[0].split("\n")
 
 		except OSError:
 			raise
