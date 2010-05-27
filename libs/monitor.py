@@ -113,11 +113,13 @@ class Store:
 		self.server = server
 		self.cache = cache
 
-	def store(self, service, data, timeTaken):
+	def store(self, hostname, service, data, timeTaken):
 
 		self.data.append({
 
 				"hash": hashlib.sha512(str(time.time())).hexdigest(),
+				"hostname": hostname,
+				"service": service,
 				"timestamp": time.time(),
 				"time_taken": timeTaken,
 				"data": {service: data}
