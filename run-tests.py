@@ -109,12 +109,12 @@ def runPlugin(configuration, hostname, plugin, classname=None, failuresOnly=Fals
 
 	configValues = []
 
-	if plugin in configuration.services[hostname]:
+	if hostname in configuration.services and plugin in configuration.services[hostname]:
 		configValues = configuration.services[hostname][plugin]
 
 	else:
 		print >> sys.stderr
-		print >> sys.stderr, "Plugin " + plugin + ": incorrect or missing configuration"
+		print >> sys.stderr, "Plugin " + plugin + " for host " + hostname + " has incorrect or missing configuration"
 		return(1)
 
 	if "enabled" not in configuration.services[hostname][plugin] or configuration.services[hostname][plugin]["enabled"]!= '1':
