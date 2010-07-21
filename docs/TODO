@@ -17,3 +17,9 @@ a) Test invalid configuration
 b) Test unreachable hosts
 c) Test all expected keys exist
 d) Test values of keys are within correct bounds
+
+Web TODO:
+
+1. Permission system
+2. Able to logically group hosts
+3. 

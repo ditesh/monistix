@@ -25,7 +25,7 @@ class MysqlPlugin(BasePlugin):
 
 		self.configure(["hostname", "port", "username", "password", "mysqladmin_path"])
 
-		if not os.path.exists(self.mysqladminPath):
+		if not os.path.exists(self["mysqladminPath"]):
 			raise IOError
 
 	def getData(self):

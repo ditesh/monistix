@@ -12,8 +12,8 @@ import sys
 import time
 import signal
 import syslog
-import monitor
 import traceback
+import libs.monitor as monitor
 from optparse import OptionParser
 
 # Basic sanity checks
