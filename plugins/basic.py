@@ -10,15 +10,10 @@ __license__ = "GPL"
 __version__ = "0.1"
 __email__ = "ditesh@gathani.org"
 
+import psutil
 import syslog
 import subprocess
 from base import *
-
-try:
-	import psutil
-
-except ImportError:
-	raise
 
 class BasicPlugin(BasePlugin):
 
