@@ -26,6 +26,7 @@ class BasicPlugin(BasePlugin):
 		newcpu = {}
 		processes = {}
 		memory = self.getMemData()
+		processInfo = self.getProcesses()
 
 		if "error" in memory:
 			return memory
@@ -88,7 +89,8 @@ class BasicPlugin(BasePlugin):
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
-		return { "cpu": cpu, "memory": memory, "processes": processes, "filesystem_blocks": filesystemBlocks, "filesystem_inodes": filesystemInodes, "netstat": netstat, "network_data": networkData }
+		return { "cpu": cpu, "memory": memory, "processes": processes, "filesystem_blocks": filesystemBlocks, "filesystem_inodes": filesystemInodes, "netstat": netstat, "network_data": networkData, "process_info": processInfo }
+
 
 
 	def getMemData(self):
@@ -214,3 +216,40 @@ class BasicPlugin(BasePlugin):
 							}
 
 		return returnValue
+
+	def getProcesses(self):
+
+		returnValue = {}
+
+		try:
+			pids = psutil.get_pid_list()
+
+			for pid in pids:
+				p = psutil.Process(pid)
+				data = {}
+				data["name"] = p.name
+				data["cmdline"] = p.cmdline
+				data["uid"] = p.uid
+				data["gid"] = p.gid
+				data["username"] = p.username
+				cputimes = p.get_cpu_times()
+				data["cpu_user_time"] = cputimes[0]
+				data["cpu_system_time"] = cputimes[1]
+				data["cpu_percent"] = p.get_cpu_percent()
+
+				meminfo = p.get_memory_info()
+				data["memory_rss"] = meminfo[0]
+				data["memory_vms"] = meminfo[1]
+				data["memory_percent"] = p.get_memory_percent()
+				returnValue[p.pid] = data
+
+		except Exception, e:
+			returnValue = {}
+			returnValue["error"] = "Unable to get process data because " + str(e)
+			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
+			return returnValue
+
+		return returnValue
+
+
