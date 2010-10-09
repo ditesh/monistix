@@ -75,7 +75,7 @@ class BasicPlugin(BasePlugin):
 				items = line.split()
 
 				if "processes" in line:
-					process_summary["total"] = items[1].strip()
+					process_summary["forks_since_boot"] = items[1].strip()
 
 				elif "procs_running" in line:
 					process_summary["running"] = items[1].strip()
