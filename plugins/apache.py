@@ -45,7 +45,14 @@ class ApachePlugin(BasePlugin):
 
 					except IndexError: continue
 
-		except:
+			else:
+				returnValue = {}
+				returnValue["error"] = "Unable to connect to http://" + self["hostname"] + ":" + str(self["port"]) + "/server-status?auto because of HTTP status " + str(resp.status)
+				returnValue["errorcode"] = 1
+				syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
+				return returnValue
+
+		except Exception, e:
 			returnValue = {}
 			returnValue["error"] = "Unable to connect to http://" + self["hostname"] + ":" + str(self["port"]) + "/server-status?auto"
 			returnValue["errorcode"] = 1
