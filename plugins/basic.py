@@ -25,8 +25,9 @@ class BasicPlugin(BasePlugin):
 		cpu = {}
 		newcpu = {}
 		processes = {}
+		process_summary = {}
 		memory = self.getMemData()
-		processInfo = self.getProcesses()
+		processes = self.getProcesses()
 
 		if "error" in memory:
 			return memory
@@ -74,13 +75,13 @@ class BasicPlugin(BasePlugin):
 				items = line.split()
 
 				if "processes" in line:
-					processes["total"] = items[1].strip()
+					process_summary["total"] = items[1].strip()
 
 				elif "procs_running" in line:
-					processes["running"] = items[1].strip()
+					process_summary["running"] = items[1].strip()
 
 				elif "procs_blocked" in line:
-					processes["blocked"] = items[1].strip()
+					process_summary["blocked"] = items[1].strip()
 
 		except:
 			returnValue = {}
@@ -89,7 +90,7 @@ class BasicPlugin(BasePlugin):
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
-		return { "cpu": cpu, "memory": memory, "processes": processes, "filesystem_blocks": filesystemBlocks, "filesystem_inodes": filesystemInodes, "netstat": netstat, "network_data": networkData, "process_info": processInfo }
+		return { "cpu": cpu, "memory": memory, "process_summary": process_summary, "filesystem_blocks": filesystemBlocks, "filesystem_inodes": filesystemInodes, "netstat": netstat, "network_data": networkData, "processes": processes }
 
 
 
