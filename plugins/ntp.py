@@ -19,7 +19,7 @@ class NTPPlugin(BasePlugin):
 		self.config = config
 		self["ntpqPath"] = "/usr/sbin/ntpq"
 
-		self.configure(["ntpq_path"])
+		self.configure(["ntpqPath"])
 
 		if not os.path.exists(self["ntpqPath"]):
 			syslog.syslog(syslog.LOG_WARNING, "Unable to find ntpq (" + self["ntpqPath"] +")")
@@ -33,7 +33,11 @@ class NTPPlugin(BasePlugin):
 			lines = subprocess.Popen([self["ntpqPath"], "-p"], stdout=subprocess.PIPE).communicate()[0].split("\n")
 
 		except OSError:
-			raise
+			returnValue = {}
+			returnValue["error"] = "Unable to execute " + self["ntpqPath"]
+			returnValue["errorcode"] = 1
+			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
+			return returnValue
 
 		for line in lines[2:]:
 

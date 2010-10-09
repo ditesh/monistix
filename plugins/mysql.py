@@ -21,18 +21,18 @@ class MysqlPlugin(BasePlugin):
 		self["username"] = None
 		self["password"] = None
 		self["hostname"] = "127.0.0.1"
-		self["mysqladminPath"] = "/usr/bin/mysqladmin"
+		self["mysqlAdminPath"] = "/usr/bin/mysqladmin"
 
-		self.configure(["hostname", "port", "username", "password", "mysqladmin_path"])
+		self.configure(["hostname", "port", "username", "password", "mysqlAdminPath"])
 
-		if not os.path.exists(self["mysqladminPath"]):
+		if not os.path.exists(self["mysqlAdminPath"]):
 			raise IOError
 
 	def getData(self):
 
 		returnValue = {}
 
-		args = [self.mysqladminPath]
+		args = [self["mysqlAdminPath"]]
 		args.append("-h")
 		args.append(self["hostname"])
 
@@ -54,14 +54,14 @@ class MysqlPlugin(BasePlugin):
 
 		except OSError:
 			returnValue = {}
-			returnValue["error"] = "Unable to execute " + self.mysqladminPath
+			returnValue["error"] = "Unable to execute " + self["mysqlAdminPath"]
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
 
 		if "error" in values[1]:
 			returnValue = {}
-			returnValue["error"] = "Unable to execute " + self.mysqladminPath
+			returnValue["error"] = "Got an error when running " + self["mysqlAdminPath"] + ": '" + values[1] + "'"
 			returnValue["errorcode"] = 1
 			syslog.syslog(syslog.LOG_WARNING, returnValue["error"])
 			return returnValue
