@@ -149,9 +149,9 @@ def runPlugin(configuration, hostname, plugin, classname=None, failuresOnly=Fals
 
 		return(0)
 
-	except  IOError:
+	except  Exception, e:
 		print >> sys.stderr
-		print >> sys.stderr, "Plugin " + plugin + ": unable to correctly run tests/" + plugin + ".py (misconfiguration is a common reason)"
+		print >> sys.stderr, "Plugin " + plugin + ": unable to correctly run tests/" + plugin + ".py because of '" + str(e) + "'"
 		return(1)
 
 
