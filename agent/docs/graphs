@@ -1,0 +1,38 @@
+--- system
+
+cpu vs time
+memory vs time
+processes vs time
+filesystem vs time
+inode vs time
+swap vs time
+
+--- postfix
+
+queues vs time
+
+
+--- apache
+
+queries vs time
+volume vs time
+piechart of 200, 400 etc
+
+--- mysql
+
+queries vs time
+volume vs time
+slow queries vs time
+
+--- asterisk
+
+channels vs time
+which zap devices are up and down over time
+sip calls vs time
+voicemail vs time
+meetme vs time
+
+
+--- ntp
+
+ntp offset vs time

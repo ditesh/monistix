@@ -1,0 +1,13 @@
+--- superuser
+
+superuser can "mimic" individual users
+
+
+--- users
+
+two types: admin, viewer
+
+admin can change, viewer can only view
+
+admin has full access, viewer can be restricted to graphs to be viewed
+

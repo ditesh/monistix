@@ -1,3 +1,0 @@
-Slashproc intends to provide backend software to collect instrumentation data and push it to a web service.
-
-At some point, this will be expanded to service monitoring and alerts, logging collection and showing pretty graphs on the web :)
