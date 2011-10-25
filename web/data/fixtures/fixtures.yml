@@ -1,0 +1,98 @@
+# # Populate this file with data to be loaded by your ORM's *:data-load task.
+# # You can create multiple files in this directory (i.e. 010_users.yml,
+# # 020_articles.yml, etc) which will be loaded in alphabetical order.
+# # 
+# # See documentation for your ORM's *:data-load task for more information.
+# 
+# User:
+#   fabien:
+#     username: fabien
+#     password: changeme
+#     name:     Fabien Potencier
+#     email:    fabien.potencier@symfony-project.com
+#   kris:
+#     username: Kris.Wallsmith
+#     password: changeme
+#     name:     Kris Wallsmith
+#     email:    kris.wallsmith@symfony-project.com
+
+Organization:
+        0:
+                name: Global Dynamics
+                enabled: true
+
+Project:
+        0:
+                name: Internal Servers
+                Organization: 0
+                enabled: true
+
+ServerGroup:
+        0:
+                name: Web Servers
+                enabled: true
+                Project: 0
+
+        1:
+                name: Database Servers
+                enabled: true
+                Project: 0
+
+        2:
+                name: Load Balancer Servers
+                enabled: true
+                Project: 0
+
+        3:
+                name: Mail Servers
+                enabled: true
+                Project: 0
+Server:
+        0:
+                name: Webserver 1
+                hostname: ws1
+                enabled: true
+                notes: One of the two webservers
+                ServerGroup: 1
+
+        1:
+                name: Webserver 2
+                hostname: ws2
+                enabled: true
+                notes: One of the two webservers
+                ServerGroup: 1
+
+        2:
+                name: Database Server 1
+                hostname: db1
+                enabled: true
+                notes: One of the five database servers
+                ServerGroup: 2
+
+        3:
+                name: Mail Server 1
+                hostname: mx1
+                enabled: true
+                notes: One of the two mail servers
+                ServerGroup: 3 
+
+        3:
+                name: Mail Server 2
+                hostname: mx1
+                enabled: true
+                notes: One of the two mail servers
+                ServerGroup: 3
+
+
+Plugin:
+        0:
+                name: Asterisk
+                enabled: true
+                notes: Asterisk plugin
+
+        1:
+                name: Apache httpd
+                enabled: true
+                notes: Apache webserver plugin
+
+
