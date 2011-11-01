@@ -6,4 +6,3 @@ web/app/cache/*
 web/app/logs/*
 web/vendor/
 web/app/config/parameters.ini
-*~
