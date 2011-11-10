@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>{% block alerts %}{% endblock %} {% block title %}{% endblock %} - Monistix</title>
+        {% block stylesheets %}{% endblock %}
+        <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" />
+        {% stylesheets 
+            "css/bootstrap.min.css" %}
+            <link rel="stylesheet" href="{{ asset_url }}" />
+        {% endstylesheets %}
+        <link href='http://fonts.googleapis.com/css?family=Ubuntu+Condensed' rel='stylesheet' type='text/css'>
+        <style>
+            /* Override some defaults */
+            body {
+                padding-top: 60px;
+            }
+
+            .page-header {
+                padding: 20px 20px 10px 20px;
+            }
+
+            textarea {
+                height: 54px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="topbar">
+            <div class="topbar-inner">
+                <div class="container-fluid">
+                    <a class="brand" href="monistix.com" style="font-family: 'Ubuntu Condensed', sans-serif">monistix</a>
+                    <ul class="nav" data-dropdown="dropdown">
+                        <li class="active"><a href="#">Dashboard</a></li>
+                        <li><a href="#nav-reports">Reports</a></li>
+                        <li class="dropdown">
+                            <a href="#nav-administration" class="dropdown-toggle">Administration</a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#nav-organizations">Organizations</a></li>
+                                <li><a href="#nav-billing">Billing</a></li>
+                                <li class="divider"></li>
+                                <li><a href="#">Monistix Preferences</a></li>
+                                <li><a href="#">Monistix Accounts</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <form class="pull-left" action="">
+                        <input type="text" placeholder="Search">
+                    </form>
+                    <ul class="nav" data-dropdown="dropdown">
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle">
+                                Signed in as Ditesh
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a href="#nav-account-details">Account Details</a></li>
+                                <li><a href="#nav-change-password">Change Password</a></li>
+                                <li><a href="#nav-sign-out">Sign out</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <p class="pull-right">Logged in as <a href="#">username</a></p>
+                </div>
+            </div>
+        </div>
+        <div class="container-fluid">
+            <div class="sidebar">
+                <div class="well">
+                    {% block sidebar %}{% endblock %}
+                </div>
+            </div>
+
+            <div class="content">
+                {% block content_title  %}{% endblock %}
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+        {% javascripts
+            "js/jquery.min.js" "js/bootstrap-modal.js" "js/bootstrap-dropdown.js" "js/bootstrap-buttons.js" %}
+            <script src="{{ asset_url }}" type="text/javascript"></script>
+        {% endjavascripts %}
+        <script>
+            $(document).ready(function() {
+
+                $(".close").click(function(evt) {
+                    $(this).parent().fadeOut();
+                });
+
+                {% block javascripts %}{% endblock %}
+            });
+        </script>
+    </body>
+</html>

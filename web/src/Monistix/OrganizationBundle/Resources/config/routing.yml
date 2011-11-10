@@ -1,0 +1,18 @@
+list_organization:
+    pattern:  /list
+    defaults: { _controller: MonistixOrganizationBundle:Default:list }
+
+add_organization:
+    pattern:  /add
+    defaults: { _controller: MonistixOrganizationBundle:Default:add }
+
+update_organization:
+    pattern:  /update/{id}
+    defaults: { _controller: MonistixOrganizationBundle:Default:update }
+
+delete_organization:
+    pattern:  /delete/{id}
+    defaults: { _controller: MonistixOrganizationBundle:Default:delete }
+    requirements:
+        id:         \d+
+        _method:    POST

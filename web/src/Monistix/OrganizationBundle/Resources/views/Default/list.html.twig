@@ -1,0 +1,155 @@
+{% extends '::base-with-sidebar.html.twig' %}
+
+{% block sidebar %}
+    {% include '::sidebar-organizations.html.twig' %}
+{% endblock %}
+
+{% block title %}
+    Organizations
+{% endblock %}
+
+{% block content_title %}
+{% spaceless %}
+<div class="page-header">
+    <h1>
+        Organizations
+        <small>viewable by you</small>
+        <div style="float: right"><a href="{{ path("add_organization") }}" class="btn small primary">New Organization</a></div>
+    </h1>
+</div>
+{% endspaceless %}
+{% endblock %}
+
+{% block content %}
+{% spaceless %}
+
+    {% if app.session.hasFlash('notice') %}
+        <div class="alert-message success">
+            <a class="close" href="#">×</a>
+            <p>{{ app.session.flash('notice')|raw }}</p>
+          </div>
+        <div class="flash-notice">
+        </div>
+    {% endif %}
+
+    <table class="bordered-table zebra-striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Organization Name</th>
+            <th>Projects</th>
+            <th>Web Accounts</th>
+            <th>Host Groups</th>
+            <th>Hosts</th>
+            <th>
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+        {% for organization in organizations %}
+          <tr>
+            <td>{{ loop.index }}</td>
+            <td>
+                <span class="label success">FREE PLAN</span>&nbsp;
+                <a href="{{ path('update_organization', {'id': organization.id}) }}">{{ organization.name }}</a>
+            </td>
+            <td>13</td>
+            <td>24</td>
+            <td>25</td>
+            <td>26</td>
+            <td style="width: 5%;">
+                <button data-organization-id="{{ organization.id }}" data-organization-name="{{ organization.name }}" class="btn small danger">Delete</button>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div id="modal-delete-organization" data-organization-id="" class="modal hide fade in" style="display: none">
+        <div class="modal-header">
+            <a href="#" class="close">×</a>
+            <h3>Delete Organization?</h3>
+        </div>
+        <div class="modal-body">
+            <div class="alert-message error" style="display: none">
+                <p><strong>Error</strong>: Something unexpected occurred, unable to delete</p>
+            </div>
+            <p>Permanently delete <strong id='modal-body-organization-name'></strong> and all associated projects, host groups, hosts and collected data?</p>
+            <p><strong>Warning:</strong> you <em>cannot</em> undo deletion. Tread carefully!</p>
+        </div>
+        <div class="modal-footer">
+            <button id="modal-button-delete" data-loading-text="Deleting ..." class="btn danger">Confirm Deletion</button>
+            <button id="modal-button-cancel" data-loading-text="Cancel" class="btn secondary">Cancel</button>
+        </div>
+    </div>
+{% endspaceless %}
+{% endblock %}
+
+{% block javascripts %}
+{% spaceless %}
+
+    $("#modal-button-delete").click(function() {
+
+        var self = this;
+        var organizationID = $("#modal-delete-organization").data("organizationId");
+        $("#modal-button-cancel").button("loading");
+        $("#modal-button-delete").button("loading");
+        
+        $.post("{{ path("delete_organization", {"id": "0"}) }}".replace("0", organizationID, "json"))
+        .success(function() {
+
+            var elem = $("#modal-delete-organization").data("organizationRow");
+            
+            // This should really be refactored
+            $(self).parent().prev().children(".alert-message").hide();
+            $("#modal-body-organization-name").html("");
+            $("#modal-delete-organization")
+            .data("organizationId", null)
+            .data("organizationRow", null)
+            .modal("toggle");
+
+            $("#modal-button-delete").button("reset");
+            $("#modal-button-cancel").button("reset");
+
+            $(elem).css("background-color", "gray").fadeOut("slow");
+
+        })
+        .error(function(err) {
+
+            $(self).parent().prev().children(".alert-message").show();
+            $("#modal-button-delete").button("reset");
+            $("#modal-button-cancel").button("reset");
+
+        });
+    });
+
+    $("#modal-button-cancel").click(function() {
+
+        // This should really be refactored
+        $(this).parent().prev().children(".alert-message").hide();
+        $("#modal-body-organization-name").html("");
+        $("#modal-delete-organization")
+        .data("organizationId", null)
+        .data("organizationRow", null)
+        .modal("toggle");
+
+        $("#modal-button-delete").button("reset");
+        $("#modal-button-cancel").button("reset");
+
+    });
+
+    $("button.btn.small.danger").click(function(evt) {
+
+        $("#modal-body-organization-name").html($(this).data("organizationName"));
+
+        $("#modal-delete-organization").modal({
+            "backdrop": true,
+            "keyboard": true,
+            "show": true
+        })
+        .data("organizationId", $(this).data("organizationId"))
+        .data("organizationRow", $(this).parent().parent());
+
+    });
+
+{% endspaceless %}
+{% endblock %}

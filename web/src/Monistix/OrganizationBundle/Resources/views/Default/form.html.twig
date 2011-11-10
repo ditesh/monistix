@@ -1,0 +1,131 @@
+{% extends '::base-with-sidebar.html.twig' %}
+{% form_theme form '::form-fields.html.twig' %}
+
+{% block sidebar %}
+    {% include '::sidebar-organizations.html.twig' %}
+{% endblock %}
+
+{% block title %}
+    Organization Definition
+{% endblock %}
+
+{% block content %}
+{% spaceless %}
+<div class="span16">
+    <ul class="tabs">
+        <li class="active"><a href="#subnav-organization">Details</a></li>
+        <li><a href="#subnav-billing">Billing & Control</a></li>
+        <li><a href="#subnav-accounts">Accounts</a></li>
+        <li><a href="#subnav-projects">Projects</a></li>
+        <li><a href="#subnav-hostgroups">Host Groups</a></li>
+        <li><a href="#subnav-hosts">Hosts</a></li>
+    </ul>
+
+    <form action="{% if form.vars.value.id is defined %}{{ path('update_organization', {'id': form.vars.value.id}) }}{% else %}{{ path('add_organization') }}{% endif %}" method="post" {{ form_enctype(form) }} novalidate>
+
+        {% if form.vars.errors|length > 0 %}
+
+            <div class="row">
+                <div class="span16">
+                    <div class="alert-message error">
+                        <p><strong>Error:</strong> There were some errors while saving. Fix the errors and try resubmitting the form.</p>
+                        {% for error in form.vars.errors %}
+                            {{ error.messageTemplate|trans(error.messageParameters, 'validators') }}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+        {% endif %}
+
+        <fieldset id="fieldset-organization">
+            <legend>Organization Details</legend>
+            {{ form_row(form.name, {'help': 'Name of organization, required'}) }}
+            {{ form_row(form.contact_name, {'help': 'Optional'}) }}
+            {{ form_row(form.contact_email, {'help': 'Optional'}) }}
+            {{ form_row(form.contact_number, {'help': 'Optional'}) }}
+            {{ form_row(form.mailing_address, {'class': 'xxlarge', 'help': 'Optional'}) }}
+            {{ form_row(form.billing_address, {'class': 'xxlarge', 'help': 'Optional'}) }}
+            {{ form_row(form.miscellaneous, {'label': 'Additional information', 'help': 'Optional', 'class': 'xxlarge'}) }}
+
+
+        </fieldset>
+        <fieldset id="fieldset-billing" style="display: none">
+            <legend>Billing & Control</legend>
+
+            {{ form_row(form.max_hosts, {'label': 'Maximum hosts', 'class': 'span2', 'help': 'Maximum number of monitored hosts, optional'}) }}
+            {{ form_row(form.max_accounts, {'label': 'Maximum accounts', 'class': 'span2', 'help': 'Maximum web access accounts allowed, optional'}) }}
+            {{ form_row(form.accounts_active , {'help': 'Enable all web access accounts in this organization'}) }}
+            {{ form_row(form.hosts_active , {'help': 'Enable data collection for all hosts in this organization'}) }}
+            {{ form_row(form.enable_billing, {'help': 'Enable this organization for billing'}) }}
+
+        </fieldset>
+
+        <fieldset id="fieldset-accounts" style="display: none">
+            <legend>Accounts</legend>
+        </fieldset>
+
+        <fieldset id="fieldset-projects" style="display: none">
+            <legend>Projects</legend>
+        </fieldset>
+
+        <fieldset id="fieldset-hostgroups" style="display: none">
+            <legend>Host Groups</legend>
+        </fieldset>
+
+        <fieldset id="fieldset-hosts" style="display: none">
+            <legend>Hosts</legend>
+        </fieldset>
+
+        {{ form_rest(form) }}
+        <div class="actions">
+                <button id="prev-button" class="btn" data-highlighted-tab="organization">Previous</button>
+                <button id="next-button" class="btn" data-highlighted-tab="organization">Next</button>
+                <input type="submit" class="btn primary" value="Save">
+        </div>
+    </form>
+</div>
+{% endspaceless %}
+{% endblock %}
+
+{% block javascripts %}
+
+    var tabs = ["organization", "billing", "accounts", "projects", "hostgroups", "hosts"];
+
+    $("a").live("click", function(evt) {
+
+        var tab = evt.target.hash.substr(8);
+        $("a[href^='#subnav-']").parent().removeClass("active");
+        $(this).parent().addClass("active");
+        $("fieldset[id^='fieldset-']").hide();
+        $("fieldset[id='fieldset-"+tab+"']").show();
+        $("#prev-button").data("highlighted-tab", tab);
+        $("#next-button").data("highlighted-tab", tab);
+
+    });
+
+    $("#next-button, #prev-button").live("click", function(evt) {
+
+        evt.preventDefault();
+        
+        var newtab = "";
+        var highlightedTab = $(this).data("highlighted-tab");
+        var index = tabs.indexOf(highlightedTab);
+
+        if (evt.target.id === "next-button") {
+
+            if (index == tabs.length-1) newtab = "organization";
+            else newtab = tabs[index+1];
+
+        } else {
+
+            if (index == 0) newtab = "hosts";
+            else newtab = tabs[index-1];
+
+        }
+
+        $(this).data("highlighted-tab", newtab);
+        $("a[href='#subnav-"+newtab+"']").click()
+
+    });
+{% endblock %}

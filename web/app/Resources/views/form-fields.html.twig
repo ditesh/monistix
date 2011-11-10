@@ -1,0 +1,41 @@
+{% block field_row %}
+{% spaceless %}
+
+    {% set error_class = type|default('') %}
+
+    {% if form.vars.errors|length > 0 %}
+        {% set error_class = 'error' %}
+    {% endif %}
+
+        <div class="clearfix {{ error_class }}">
+            {{ form_label(form, label) }}
+            <div class="input">
+                {% if class is defined %}
+                    {{ form_widget(form, {'attr': {'class': class}}) }}
+                {% else %}
+                    {{ form_widget(form) }}
+                {% endif %}
+                <span class="help-inline">
+                    {% if error_class == "error" %}
+                         ({{ help }}) {{ form_errors(form) }}
+                    {% elseif help is defined %}
+                        {{ help }}
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+
+{% endspaceless %}
+{% endblock field_row %}
+
+{% block field_errors %}
+{% spaceless %}
+
+    {% if errors|length > 0 %}
+        {% for error in errors %}
+            {{ error.messageTemplate|trans(error.messageParameters, 'validators') }}
+        {% endfor %}
+    {% endif %}
+
+{% endspaceless %}
+{% endblock field_errors %}
