@@ -1,5 +1,6 @@
 *pyc
 *sw?
+*.php~
 web/web/bundles/
 web/app/bootstrap*
 web/app/cache/*

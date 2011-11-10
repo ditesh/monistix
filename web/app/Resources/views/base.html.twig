@@ -1,13 +1,89 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        <title>{% block title %}Welcome!{% endblock %}</title>
+        <title>{% block title %}Monistix{% endblock %}</title>
         {% block stylesheets %}{% endblock %}
+        <style>
+            /* Override some defaults */
+            html, body {
+                background-color: #eee;
+            }
+            body {
+                padding-top: 60px;
+            }
+
+            /* Page header tweaks */
+            .page-header {
+                background-color: #f5f5f5;
+                padding: 20px 20px 10px;
+                /*margin: 20px -20px 20px;*/
+            }
+
+            .topbar .btn {
+                border: 0;
+            }
+
+        </style>
+
         <link rel="shortcut icon" href="{{ asset('favicon.ico') }}" />
+        <link rel="stylesheet" href="http://twitter.github.com/bootstrap/1.3.0/bootstrap.min.css">
+        <link href='http://fonts.googleapis.com/css?family=Ubuntu+Condensed' rel='stylesheet' type='text/css'>
     </head>
     <body>
-        {% block body %}{% endblock %}
-        {% block javascripts %}{% endblock %}
+	<div class="topbar">
+		<div class="topbar-inner">
+			<div class="container-fluid">
+			    <a class="brand" href="monistix.com" style="font-family: 'Ubuntu Condensed', sans-serif">monistix</a>
+			    <ul class="nav" data-dropdown="dropdown">
+				<li class="active"><a href="#">Dashboard</a></li>
+				<li><a href="#nav-organizations">Organizations</a></li>
+				<li><a href="#nav-reports">Reports</a></li>
+				<li class="dropdown">
+				    <a href="#nav-administration" class="dropdown-toggle">Administration</a>
+				    <ul class="dropdown-menu">
+					<li><a href="#nav-organizations">Organizations</a></li>
+					<li><a href="#nav-accounts">Accounts</a></li>
+					<li class="divider"></li>
+					<li><a href="#">Monistix Accounts</a></li>
+				    </ul>
+				</li>
+			    </ul>
+			    <form class="pull-left" action="">
+				<input type="text" placeholder="Search">
+			    </form>
+			    <ul class="nav" data-dropdown="dropdown">
+				<li class="dropdown">
+				    <a href="#" class="dropdown-toggle">
+						Signed in as Ditesh
+					</a>
+				    <ul class="dropdown-menu">
+						<li><a href="#nav-account-details">Account Details</a></li>
+						<li><a href="#nav-change-password">Change Password</a></li>
+						<li><a href="#nav-sign-out">Sign out</a></li>
+				    </ul>
+				</li>
+			    </ul>
+			</div>
+		</div>
+	</div>
+	<div class="container-fluid">
+        <div class="content">
+            <div class="row">
+                <div class="page-header">
+                    <h1>Add <small>an organization</small></h1>
+                </div>
+            </div>
+
+            <div class="row">
+                {% block content %}
+                {% endblock %}
+            </div>
+
+		</div>
+	</div>
+	{% block javascripts %}{% endblock %}
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+	<script src="http://twitter.github.com/bootstrap/1.3.0/bootstrap-dropdown.js">
     </body>
 </html>

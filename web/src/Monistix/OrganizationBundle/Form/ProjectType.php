@@ -1,6 +1,6 @@
 <?php
 
-namespace Monistix\OrganizationBundle\Form\Type;
+namespace Monistix\OrganizationBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilder;

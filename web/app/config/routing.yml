@@ -1,6 +1,6 @@
-AcmeHelloBundle:
-    resource: "@AcmeHelloBundle/Resources/config/routing.yml"
-    prefix:   /
+MonistixOrganizationBundle:
+    resource: "@MonistixOrganizationBundle/Resources/config/routing.yml"
+    prefix:   /organization
 
 # Internal routing configuration to handle ESI
 #_internal:
