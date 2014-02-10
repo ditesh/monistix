@@ -32,9 +32,19 @@ class DefaultController extends Controller {
 
             if ($form->isValid()) {
 
-                $this->getDoctrine()->getEntityManager()
-                     ->persist($form->getData())
-                     ->flush();
+                $organization = $form->getData();
+                $projects = $organization->getProjects();
+                $em = $this->getDoctrine()->getEntityManager();
+
+                foreach ($projects as $project) {
+
+                    $project->setOrganization($organization);
+                    $em->persist($project);
+
+                }
+
+                $em->persist($organization);
+                $em->flush();
 
                 $this->get('session')->setFlash('notice', '<strong>'.$form->getData()->getName().'</strong> was successfully saved');
                 return $this->redirect($this->generateUrl('list_organization'));
@@ -81,7 +91,6 @@ class DefaultController extends Controller {
         $organization = $this->getDoctrine()->getRepository('MonistixOrganizationBundle:Organization')->findOneById($id);
 
         if (!$organization) throw $this->createNotFoundException('The organization does not exist');
-        $this->get("logger")->debug("potato");
 
         if ($this->get("request")->getMethod() == 'POST') {
 

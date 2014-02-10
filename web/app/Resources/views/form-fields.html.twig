@@ -7,23 +7,23 @@
         {% set error_class = 'error' %}
     {% endif %}
 
-        <div class="clearfix {{ error_class }}">
-            {{ form_label(form, label) }}
-            <div class="input">
-                {% if class is defined %}
-                    {{ form_widget(form, {'attr': {'class': class}}) }}
-                {% else %}
-                    {{ form_widget(form) }}
+    <div class="clearfix {{ error_class }}">
+        {{ form_label(form, label) }}
+        <div class="input">
+            {% if class is defined %}
+                {{ form_widget(form, {'attr': {'class': class}}) }}
+            {% else %}
+                {{ form_widget(form) }}
+            {% endif %}
+            <span class="help-inline">
+                {% if error_class == "error" %}
+                     {{ help }}. {{ form_errors(form) }}
+                {% elseif help is defined %}
+                    {{ help }}
                 {% endif %}
-                <span class="help-inline">
-                    {% if error_class == "error" %}
-                         ({{ help }}) {{ form_errors(form) }}
-                    {% elseif help is defined %}
-                        {{ help }}
-                    {% endif %}
-                </span>
-            </div>
+            </span>
         </div>
+    </div>
 
 {% endspaceless %}
 {% endblock field_row %}

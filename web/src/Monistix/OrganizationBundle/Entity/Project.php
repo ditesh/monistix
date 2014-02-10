@@ -51,6 +51,13 @@ class Project {
     protected $miscellaneous;
 
     /**
+     * @ORM\ManyToOne(targetEntity="Organization", inversedBy="Project")
+     *
+     * @var Organization $organization
+     */
+    protected $organization;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -338,5 +345,25 @@ class Project {
     public function getEnableBilling()
     {
         return $this->enable_billing;
+    }
+
+    /**
+     * Set organization
+     *
+     * @param Monistix\OrganizationBundle\Entity\Organization $organization
+     */
+    public function setOrganization(\Monistix\OrganizationBundle\Entity\Organization $organization)
+    {
+        $this->organization = $organization;
+    }
+
+    /**
+     * Get organization
+     *
+     * @return Monistix\OrganizationBundle\Entity\Organization 
+     */
+    public function getOrganization()
+    {
+        return $this->organization;
     }
 }

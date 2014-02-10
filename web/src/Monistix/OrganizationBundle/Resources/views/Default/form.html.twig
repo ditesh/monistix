@@ -12,16 +12,17 @@
 {% block content %}
 {% spaceless %}
 <div class="span16">
-    <ul class="tabs">
-        <li class="active"><a href="#subnav-organization">Details</a></li>
-        <li><a href="#subnav-billing">Billing & Control</a></li>
-        <li><a href="#subnav-accounts">Accounts</a></li>
-        <li><a href="#subnav-projects">Projects</a></li>
-        <li><a href="#subnav-hostgroups">Host Groups</a></li>
-        <li><a href="#subnav-hosts">Hosts</a></li>
+    <ul class="tabs" data-tabs="tabs">
+        <li class="active"><a href="#organization-pane">Administrativia</a></li>
+        <li><a href="#billing-pane">Billing & Control</a></li>
+        <li><a id="list-web-accounts" href="#web-accounts-pane">Web Accounts</a></li>
+        <li><a id="list-projects" href="#list-projects-pane">Projects</a></li>
+        <li><a id="list-host-groups" href="#list-hostgroups-pane">Host Groups</a></li>
+        <li><a id="list-hosts" href="#list-hosts">Hosts</a></li>
+        <li style="float: right"><a id="add-project" href=#add-project" class="btn small primary" style="padding: 0px 9px">New Project</a></li>
     </ul>
 
-    <form action="{% if form.vars.value.id is defined %}{{ path('update_organization', {'id': form.vars.value.id}) }}{% else %}{{ path('add_organization') }}{% endif %}" method="post" {{ form_enctype(form) }} novalidate>
+    <form action="{% if form.vars.value.id is not empty %}{{ path('update_organization', {'id': form.vars.value.id}) }}{% else %}{{ path('add_organization') }}{% endif %}" method="post" {{ form_enctype(form) }} novalidate>
 
         {% if form.vars.errors|length > 0 %}
 
@@ -38,94 +39,355 @@
 
         {% endif %}
 
-        <fieldset id="fieldset-organization">
-            <legend>Organization Details</legend>
-            {{ form_row(form.name, {'help': 'Name of organization, required'}) }}
-            {{ form_row(form.contact_name, {'help': 'Optional'}) }}
-            {{ form_row(form.contact_email, {'help': 'Optional'}) }}
-            {{ form_row(form.contact_number, {'help': 'Optional'}) }}
-            {{ form_row(form.mailing_address, {'class': 'xxlarge', 'help': 'Optional'}) }}
-            {{ form_row(form.billing_address, {'class': 'xxlarge', 'help': 'Optional'}) }}
-            {{ form_row(form.miscellaneous, {'label': 'Additional information', 'help': 'Optional', 'class': 'xxlarge'}) }}
+        <div id="my-tab-content" class="tab-content">
+            <div class="active tab-pane" id="subnav-organization-pane">
+                <fieldset>
+                    <legend>Organization Details</legend>
+                    {{ form_row(form.name, {'help': 'Name of organization, required'}) }}
+                    {{ form_row(form.contact_name, {'help': 'Optional'}) }}
+                    {{ form_row(form.contact_email, {'help': 'Optional'}) }}
+                    {{ form_row(form.contact_number, {'help': 'Optional'}) }}
+                    {{ form_row(form.mailing_address, {'class': 'xxlarge', 'help': 'Optional'}) }}
+                    {{ form_row(form.billing_address, {'class': 'xxlarge', 'help': 'Optional'}) }}
+                    {{ form_row(form.miscellaneous, {'label': 'Additional information', 'help': 'Optional', 'class': 'xxlarge'}) }}
+                </fieldset>
+            </div>
 
+            <div class="tab-pane" id="subnav-billing-pane">
+                <fieldset>
+                    <legend>Billing & Control</legend>
+                    {{ form_row(form.max_hosts, {'label': 'Maximum hosts', 'class': 'span2', 'help': 'Maximum number of monitored hosts, optional'}) }}
+                    {{ form_row(form.max_accounts, {'label': 'Maximum accounts', 'class': 'span2', 'help': 'Maximum web access accounts allowed, optional'}) }}
+                    {{ form_row(form.accounts_active , {'help': 'Enable all web access accounts in this organization'}) }}
+                    {{ form_row(form.hosts_active , {'help': 'Enable data collection for all hosts in this organization'}) }}
+                    {{ form_row(form.enable_billing, {'help': 'Enable this organization for billing'}) }}
+                </fieldset>
+            </div>
 
-        </fieldset>
-        <fieldset id="fieldset-billing" style="display: none">
-            <legend>Billing & Control</legend>
+            <div class="tab-pane" id="web-accounts-pane">
+            </div>
 
-            {{ form_row(form.max_hosts, {'label': 'Maximum hosts', 'class': 'span2', 'help': 'Maximum number of monitored hosts, optional'}) }}
-            {{ form_row(form.max_accounts, {'label': 'Maximum accounts', 'class': 'span2', 'help': 'Maximum web access accounts allowed, optional'}) }}
-            {{ form_row(form.accounts_active , {'help': 'Enable all web access accounts in this organization'}) }}
-            {{ form_row(form.hosts_active , {'help': 'Enable data collection for all hosts in this organization'}) }}
-            {{ form_row(form.enable_billing, {'help': 'Enable this organization for billing'}) }}
+            <div class="tab-pane" id="add-project-pane">
+                <fieldset>
+                </fieldset>
+            </div>
 
-        </fieldset>
+            <div class="tab-pane" id="list-projects-pane">
 
-        <fieldset id="fieldset-accounts" style="display: none">
-            <legend>Accounts</legend>
-        </fieldset>
+                <table class="bordered-table zebra-striped">
+                    <thead>
+                      <tr>
+                        <th>Name</th>
+                        <th>Host Groups</th>
+                        <th>Hosts</th>
+                        <th>
+                        </td>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {% for project in form.projects %}
+                        <tr>
+                            <td>
+                                <span class="label success">FREE PLAN</span>&nbsp;
+                                {{ project.vars.value.name }}
+                            </td>
+                            <td>13</td>
+                            <td>24</td>
+                            <td style="width: 5%;">
+                                <button type='button' data-project-id="{{ project.vars.value.id }}" data-project-name="{{ project.vars.value.name }}" class="btn small danger">Delete</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
-        <fieldset id="fieldset-projects" style="display: none">
-            <legend>Projects</legend>
-        </fieldset>
+            <div class="tab-pane" id="subnav-hostgroups">
+                <fieldset>
+                    <legend>Host Groups</legend>
+                </fieldset>
+            </div>
 
-        <fieldset id="fieldset-hostgroups" style="display: none">
-            <legend>Host Groups</legend>
-        </fieldset>
-
-        <fieldset id="fieldset-hosts" style="display: none">
-            <legend>Hosts</legend>
-        </fieldset>
-
-        {{ form_rest(form) }}
-        <div class="actions">
-                <button id="prev-button" class="btn" data-highlighted-tab="organization">Previous</button>
-                <button id="next-button" class="btn" data-highlighted-tab="organization">Next</button>
-                <input type="submit" class="btn primary" value="Save">
+            <div class="tab-pane" id="subnav-hosts">
+                <fieldset>
+                    <legend>Hosts</legend>
+                </fieldset>
+            </div>
         </div>
+        <div class="actions">
+            <input type="submit" class="btn primary" value="Save">
+        </div>
+        {{ form_row(form._token ) }}
     </form>
+    <div id="project-prototype" style="display: none">
+        <legend>Projects</legend>
+        {{ form_row(form.projects.get("prototype").name, {'help': 'Name of project, required'}) }}
+        {{ form_row(form.projects.get("prototype").contact_name, {'help': 'Optional'}) }}
+        {{ form_row(form.projects.get("prototype").contact_email, {'help': 'Optional'}) }}
+        {{ form_row(form.projects.get("prototype").contact_number, {'help': 'Optional'}) }}
+        {{ form_row(form.projects.get("prototype").miscellaneous, {'label': 'Additional information', 'help': 'Optional', 'class': 'xxlarge'}) }}
+    </div>
+    <div id="modal-delete-entity" class="modal hide fade in" style="display: none">
+        <div class="modal-header">
+            <a href="#" class="close">×</a>
+            <h3>Delete Entity</h3>
+        </div>
+        <div class="modal-body">
+            <p>Permanently delete <strong>entity</strong> and all associated data?</p>
+            <p><strong>Warning:</strong> you <em>cannot</em> undo deletion. Tread carefully!</p>
+        </div>
+        <div class="modal-footer">
+            <button id="modal-button-delete" type='button' data-loading-text="Saving ..." class="btn primary">Confirm Deletion</button>
+            <button id="modal-button-cancel" type='button' data-loading-text="Cancel" class="btn secondary">Cancel</button>
+        </div>
+    </div>
 </div>
 {% endspaceless %}
 {% endblock %}
 
 {% block javascripts %}
 
-    var tabs = ["organization", "billing", "accounts", "projects", "hostgroups", "hosts"];
+    var entityCounts = { "project": 0, "hostgroup": 0, "hosts": 0 };
 
-    $("a").live("click", function(evt) {
+    $("#add-project, #add-hostgroup, #add-host").live("click", function(evt) {
 
-        var tab = evt.target.hash.substr(8);
-        $("a[href^='#subnav-']").parent().removeClass("active");
-        $(this).parent().addClass("active");
-        $("fieldset[id^='fieldset-']").hide();
-        $("fieldset[id='fieldset-"+tab+"']").show();
-        $("#prev-button").data("highlighted-tab", tab);
-        $("#next-button").data("highlighted-tab", tab);
+        var entityType = evt.target.id.split("-")[2];
+        var count = entityCounts[entityType];
+
+        var markup = $("#project-"+entityType).html().replace(new RegExp("\\$\\$name\\$\\$", "gm"), count);
+        entityType = "project";
+        entityCounts[entityType] += 1;
+
+        var elem = $("#add-"+entityType+"-pane > fieldset");
+        if (elem.children().length === 0) elem.append(markup);
+
+        ActionBar.removeAll();
+        ActionBar.addButton("save-entity", "btn info", "Save "+entityType.charAt(0).toUpperCase()+entityType.slice(1), {"entityType": entityType});
+        ActionBar.addButton("cancel-entity", "btn secondary", "Cancel", {"entityType": entityType});
+        ActionBar.show();
 
     });
 
-    $("#next-button, #prev-button").live("click", function(evt) {
+    $(".tabs").bind("change", function (e) {
 
-        evt.preventDefault();
-        
-        var newtab = "";
-        var highlightedTab = $(this).data("highlighted-tab");
-        var index = tabs.indexOf(highlightedTab);
+        if (e.target.hash.substr(0, 5) === "#list") {
 
-        if (evt.target.id === "next-button") {
+            var entityType = e.target.hash.split("-")[1].slice(0, -1);
+            console.log(entityType);
+            $("#add-"+entityType+"-pane > fieldset").empty();
 
-            if (index == tabs.length-1) newtab = "organization";
-            else newtab = tabs[index+1];
+            EntityList.show(entityType);
+
+        } else if (e.target.hash === "#organization-pane") ActionBar.restore();
+
+
+    });
+
+    $("a[href='#add-entity']").live("click", function() {
+
+        var entityType = $(this).data("entityType");
+        $("#add-"+entityType).trigger("click");
+
+    });
+
+    $("a[href='#update-entity']").live("click", function() {
+
+        var entityID= $(this).data("entityId");
+        var entityType = $(this).data("entityType");
+        var elem = $("#add-"+entityType+"-pane > fieldset");
+        elem.empty();
+
+        elem
+        .append($("#"+entityType+"-"+entityID).children())
+        .data("entityId", entityID);
+
+        $("#entity-"+entityID).remove();
+
+        ActionBar.addButton("save-entity", "btn info", "Save "+entityType.charAt(0).toUpperCase()+entityType.slice(1));
+
+        $("#add-"+entityType).trigger("click");
+
+    });
+
+    $("#save-entity").live("click", function() {
+
+        var entityType = $(this).data("entityType");
+        var entityName = $("#add-"+entityType+"-pane > fieldset input[type='text']").val().trim();
+
+        if (entityName.length > 0) {
+
+            var entityID = $("#add-"+entityType+"-pane > fieldset").data("entityId");
+
+            if (entityID !== undefined) {
+
+                $("#list-"+entityType+"s-pane > table > tbody > tr")
+                .filter(function() { return $(this).data("entityId") === entityID }).remove();
+
+            } else entityID = Math.round(Math.random()*1000);
+
+            $("ul.tabs + form").append("<div id='"+entityType+"-"+entityID+"' style='display: none'></div>");
+            $("#project-"+entityID).append($("#add-project-pane > fieldset").children());
+
+            $("#add-"+entityType+"-pane > fieldset").empty();
+            $("#add-"+entityType+"-pane > fieldset").removeData("entityId");
+
+            if (entityType == "project") html = "<tr data-entity-id='"+entityID+"'><td><span class='label success'>NEW</span> <a href='#update-entity' data-entity-id='"+entityID+"' data-entity-type='project'>"+entityName+"</a></td><td>0</td><td>0</td><td style='width: 5%'><button type='button' data-entity-id='+entityID+' data-entity-type='project' data-entity-name='"+entityName+"' class='btn small danger'>Delete</button></td></tr>";
+
+            $("#list-"+entityType+"s-pane > table > tbody").prepend(html);
+            $("#list-"+entityType+"s").trigger("click");
+
+            ActionBar.restore();
 
         } else {
 
-            if (index == 0) newtab = "hosts";
-            else newtab = tabs[index-1];
+            $("#add-"+entityType+"-pane > fieldset > div:first").addClass("error");
+
+        }
+    });
+
+    $("#cancel-entity").live("click", function() {
+
+        var entityType = $(this).data("entityType");
+        $("#add-"+entityType+"-pane > fieldset").empty();
+        $("#list-"+entityType+"s").trigger("click");
+
+    });
+
+    $("button.btn.small.danger").live("click", function(evt) {
+
+        var entityType = $(this).data("entityType");
+        $("#modal-delete-entity strong").first().html($(this).data("entityName"));
+        $("#modal-delete-entity").html($("#modal-delete-entity").html().replace("Entity", entityType.charAt(0).toUpperCase() + entityType.slice(1)));
+
+        $("#modal-delete-entity").modal({
+            "backdrop": true,
+            "keyboard": true,
+            "show": true
+        })
+        .data("entityId", $(this).data("entityId"))
+        .data("entityType", entityType)
+        .data("entityRow", $(this).parent().parent());
+
+    });
+
+    $("#modal-button-delete").live("click", function() {
+
+        var entityType = $("#modal-delete-entity").data("entityType");
+        $("#modal-delete-entity strong").first().html("");
+        $("#modal-delete-entity").html($("#modal-delete-entity").html().replace($(this).data("entityType"), "Entity"));
+
+        var elem = $("#modal-delete-entity").data("entityRow");
+        elem.remove();
+
+        $("#modal-button-save").button("reset");
+        $("#modal-button-cancel").button("reset");
+
+        $("#modal-delete-entity")
+        .removeData("entityId")
+        .removeData("entityRow")
+        .removeData("entityType")
+        .modal("toggle");
+
+        EntityList.show(entityType);
+
+    });
+
+    $("#modal-button-cancel").live("click", function() {
+
+        $("#modal-delete-entity strong").html("");
+        $("#modal-delete-entity")
+        .removeData("entityId")
+        .removeData("entityRow")
+        .modal("toggle");
+
+        $("#modal-button-save").button("reset");
+        $("#modal-button-cancel").button("reset");
+
+    });
+
+    var EntityList = new (function() {
+
+        this.show = function(entityType) {
+
+             if ($("#list-"+entityType+"s-pane > table > tbody").children().length === 0) {
+
+                $("#no-"+entityType+"s").show();
+                $("#list-"+entityType+"s-pane > table").hide();
+
+            } else {
+
+                $("#no-"+entityType+"s").hide();
+                $("#list-"+entityType+"s-pane > table").show();
+
+            }
+
+            ActionBar.hide();
+
+        }
+       
+
+
+    })();
+
+    var ActionBar = new (function() {
+
+        var submitbtn = '<input type="submit" class="btn primary" value="Save">';
+        var elem = $(".actions");
+
+        this.show = function() {
+            elem.show();
+        }
+
+        this.hide = function() {
+            elem.hide();
+        }
+
+        this.removeAll = function() {
+            elem.empty();
+        }
+
+        this.restore = function() {
+
+            elem.empty();
+            elem.append(submitbtn);
+            elem.show();
 
         }
 
-        $(this).data("highlighted-tab", newtab);
-        $("a[href='#subnav-"+newtab+"']").click()
+        this.addButton = function(id, classname, val, hashmap) {
 
-    });
+            var btn = $("#"+id);
+
+            if (btn !== null) {
+
+                btn.next().remove();
+                btn.remove();
+
+            }
+
+            var btn = $("<button id='"+id+"' type='button' class='"+classname+"'>"+val+"</button>");
+
+            if (hashmap !== undefined) {
+
+                for (var prop in hashmap) {
+                    if (hashmap.hasOwnProperty(prop)) btn.data(prop, hashmap[prop]);
+                }
+            }
+
+            elem.prepend(btn, "&nbsp;");
+            elem.show();
+
+        }
+
+        this.removeButton = function(id) {
+
+            var btn = $("#"+id);
+            btn.next().remove();
+            btn.remove();
+            elem.show();
+
+        }
+
+    })();
+
 {% endblock %}

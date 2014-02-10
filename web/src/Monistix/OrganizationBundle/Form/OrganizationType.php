@@ -22,7 +22,8 @@ class OrganizationType extends AbstractType {
                 ->add("mailing_address", "textarea", array("required"=>false))
                 ->add("miscellaneous", "textarea", array("required"=>false));
 
-//        $builder->add("projects", "collection", array("type" => new ProjectType(), "allow_add"=>true, "prototype"=>true));
+        $builder->add("projects", "collection", array("type" => new ProjectType(), "allow_add"=>true, 
+                                                        "allow_delete"=>true, "prototype"=>true, 'by_reference' => false));
 
     }
 

@@ -84,6 +84,11 @@ class Organization {
      */
     protected $miscellaneous;
 
+    /**
+     * @ORM\OneToMany(targetEntity="Project", mappedBy="organization", cascade={"persist", "remove"})
+     *
+     * @var ArrayCollection $projects
+     */
     protected $projects;
 
     public function __construct() {
@@ -387,5 +392,15 @@ class Organization {
     public function getEnableBilling()
     {
         return $this->enable_billing;
+    }
+
+    /**
+     * Add projects
+     *
+     * @param Monistix\OrganizationBundle\Entity\Project $projects
+     */
+    public function addProject(\Monistix\OrganizationBundle\Entity\Project $projects)
+    {
+        $this->projects[] = $projects;
     }
 }

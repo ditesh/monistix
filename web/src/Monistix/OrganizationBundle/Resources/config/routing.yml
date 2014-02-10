@@ -1,3 +1,4 @@
+# organization
 list_organization:
     pattern:  /list
     defaults: { _controller: MonistixOrganizationBundle:Default:list }
@@ -16,3 +17,12 @@ delete_organization:
     requirements:
         id:         \d+
         _method:    POST
+
+
+# project
+
+add_project:
+    pattern:  /addproject
+    defaults: { _controller: MonistixOrganizationBundle:Project:add }
+
+
